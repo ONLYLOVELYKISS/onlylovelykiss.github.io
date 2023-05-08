@@ -27,7 +27,22 @@ header-img: "media/2023-05-07-02.mp4"
 
 -->
 
-<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
-    <video src="media/2023-05-07-02.mp4" controls autoplay loop style="position:absolute;top:0;left:0;width:100%;height:100%;"></video>
-  </div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>My Video Player</title>
+    <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet" />
+  </head>
+  <body>
+    <video id="my-video" class="video-js vjs-default-skin" controls autoplay width="320" height="148">
+      <source src="https://your-video-url.mp4" type="video/mp4" />
+    </video>
+    <script src="https://vjs.zencdn.net/7.15.4/video.js"></script>
+    <script>
+      var player = videojs('my-video');
+    </script>
+  </body>
+</html>
+
   
