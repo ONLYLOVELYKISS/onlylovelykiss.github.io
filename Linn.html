@@ -8,227 +8,268 @@
     <style>
         /* 自定义字体 - Inter，提高文本可读性 */
         @font-face {
-            font-family: 'YourCustomFont'; /* 定义您的自定义字体名称 */
-            /* 替换为您的TTF字体文件的实际URL。此URL指向一个GitHub Pages上的字体文件。 */
+            font-family: 'YourCustomFont'; /* Define your custom font name */
+            /* Replace with the actual URL of your TTF font file. This URL points to a font file on GitHub Pages. */
             src: url('https://cdn.jsdelivr.net/gh/ONLYLOVELYKISS/onlylovelykiss.github.io@master/fonts/ark-pixel-12px-zh_cn.ttf') format('truetype');
-            font-weight: normal; /* 字体的粗细 */
-            font-style: normal; /* 字体的样式 */
-            font-display: swap; /* 字体加载策略，在字体加载期间使用备用字体 */
+            font-weight: normal; /* Font weight */
+            font-style: normal; /* Font style */
+            font-display: swap; /* Font loading strategy, use fallback font during font loading */
         }
 
         body {
-            font-family: 'YourCustomFont', 'Inter', sans-serif; /* 优先使用自定义字体，如果加载失败则回退到Inter或系统默认的无衬线字体 */
+            font-family: 'YourCustomFont', 'Inter', sans-serif; /* Prioritize custom font, fallback to Inter or system sans-serif if loading fails */
         }
-        /* 确保页面和body元素占据整个视口高度，并移除默认边距和填充 */
+        /* Ensure page and body elements occupy full viewport height, and remove default margins and padding */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
-            /* 全屏壁纸设置 */
+            /* Full screen wallpaper settings */
             background-image: url('https://cdn.jsdelivr.net/gh/ONLYLOVELYKISS/onlylovelykiss.github.io@master/img/Back.jpg');
-            background-size: cover; /* 确保背景图片覆盖整个元素 */
-            background-position: center center; /* 将背景图片居中显示 */
-            background-attachment: fixed; /* 固定背景，不随页面滚动而滚动 */
+            background-size: cover; /* Ensure background image covers the entire element */
+            background-position: center center; /* Center the background image */
+            background-attachment: fixed; /* Fix background, does not scroll with the page */
         }
-        /* 定义深色模式下的过渡效果，使模式切换更平滑 */
+        /* Define transition effects for dark mode, making mode switching smoother */
         body.dark {
-            transition: background-color 0.5s ease; /* 背景颜色过渡 */
+            transition: background-color 0.5s ease; /* Background color transition */
         }
-        /* 主内容区域的透明度过渡 */
+        /* Transparency transition for main content area */
+        /* Original large box deleted, this rule no longer directly applies, but kept in case of future need */
         .dark .bg-white\/60 {
             transition: background-color 0.5s ease;
         }
-        /* 各个板块的背景颜色过渡 */
+        /* Background color transition for each section */
         .dark .bg-gray-800\/40 {
             transition: background-color 0.5s ease;
         }
-        /* 文本颜色的过渡 */
+        /* Text color transition */
         .dark h1, .dark h2, .dark p, .dark a, .dark footer {
             transition: color 0.5s ease;
         }
-        /* 底部版权信息与页面底部的距离 */
+        /* Distance from bottom copyright information to page bottom */
+        /* Adjusted to approximately 3cm (30px) */
         footer {
-            margin-bottom: 10px; /* 设置底部外边距为20px，约2厘米 */
+            margin-bottom: 30px; /* Restored to 30px, approximately 3cm */
+        }
+
+        /* Heading font color - removed gradient, restored to default or Tailwind color */
+        h1 {
+            /* Removed gradient related styles */
+            background-image: none;
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: unset;
+            color: #1a202c; /* Default dark text color, similar to Tailwind text-gray-900 */
+        }
+        /* h1 color in dark mode */
+        .dark h1 {
+            color: #f7fafc; /* Light text color in dark mode, similar to Tailwind text-white */
+        }
+
+        /* Mouse click effect styles */
+        .click-effect {
+            position: absolute;
+            pointer-events: none; /* Ensure it does not interfere with mouse events */
+            font-size: 1.5em; /* Smaller heart size */
+            opacity: 1;
+            transform: translate(-50%, -50%); /* Centered at click point */
+            transition: all 0.6s ease-out; /* Animation effect */
+            z-index: 9999; /* Ensure it's on top */
+        }
+        .click-effect.fade-out {
+            opacity: 0;
+            transform: translate(-50%, -100px); /* Moves up and fades out */
         }
     </style>
 </head>
 <!-- 
-    优化body和主内容div的布局，确保在不同屏幕尺寸下内容居中且可滚动。
-    移除body上的pt-24，避免在小屏幕上内容被推下。
-    flex-grow 确保主内容区域占据可用空间，并允许页面在内容溢出时滚动。
+    Overall code review and optimization:
+    - HTML structure is clear and semantic.
+    - Meta tags are correctly set for good mobile adaptation and scaling.
+    - Tailwind CSS CDN is correctly included and its responsive classes are fully utilized.
+    - Custom font loading and fallback strategy are reasonable.
+    - Global styles (background, height, margins) are well-set, ensuring the basic page layout.
+    - Dark mode CSS transition effect is smooth.
+    - Body tag classes (min-h-screen, flex, flex-col, items-center, px/py, space-y-12) work together to ensure overall vertical layout, centering, responsive padding, and vertical spacing between main content blocks.
+    - The original large box has been removed, its content (header, section, main) are now direct children of the body.
+    - Each section's layout (grid, gap, p-4) maintains content neatness and responsiveness.
+    - Links and content for each section have been updated as per user request.
+    - Footer is independent of main content, and correctly set for centering, font color (black in light mode, light gray in dark mode), and distance from the bottom of the page.
+    - JavaScript functions (search, theme switching) are clear and correctly implemented.
+    - Horizontal padding on the body (px-8 sm:px-16 lg:px-24) was adjusted to increase the distance of the large box from the left and right edges of the page.
+    - Padding of sections (px-3 py-4) was adjusted to reduce the size of each section.
+    - Shadow size of sections was reduced (shadow-xl changed to shadow-md).
+    - Gradient effect on h1 title was removed, and mouse click effect "❤️" was added.
+    - Mouse click effect size was reduced (font-size: 1.5em).
 -->
-<body class="min-h-screen flex flex-col items-center px-4 sm:px-6 lg:px-8 dark:bg-gray-900">
-    <div class="max-w-6xl w-full mx-auto bg-white/60 p-12 rounded-3xl shadow-2xl space-y-12 backdrop-blur-lg
-                 dark:bg-gray-800/60 flex-grow">
-        <header class="text-center">
-            <h1 class="text-6xl font-extrabold text-gray-900 mb-4 tracking-tight
-                         dark:text-white">
-                余心留白🙄
-            </h1>
-            <p class="text-xl text-gray-700
-                             dark:text-gray-200">
-                如果你喜欢一个女孩，就好好努力多挣钱，到时候多随点份子钱。
-            </p>
-        </header>
+<body class="min-h-screen flex flex-col items-center px-8 sm:px-16 lg:px-24 py-8 space-y-12 dark:bg-gray-900">
+    <header class="text-center">
+        <h1 class="text-6xl font-extrabold mb-4 tracking-tight">
+            余心留白🙄
+        </h1>
+        <p class="text-xl text-gray-700
+                         dark:text-gray-200">
+            如果你喜欢一个女孩，就好好努力多挣钱，到时候多随点份子钱。
+        </p>
+    </header>
 
-        <section class="flex flex-col items-center justify-center p-10 bg-gray-800/60 rounded-2xl shadow-xl space-y-6
-                                 dark:bg-gray-900/60">
-            <h2 class="text-3xl font-semibold text-white border-b-2 border-red-500 pb-3 mb-3
-                                 dark:text-gray-100 dark:border-red-700">
-                我不会使用搜索
+    <section class="flex flex-col items-center justify-center px-3 py-4 bg-gray-800/60 rounded-2xl shadow-md space-y-6
+                             dark:bg-gray-900/60 w-full max-w-6xl">
+        <h2 class="text-3xl font-semibold text-white border-b-2 border-red-500 pb-3 mb-3
+                             dark:text-gray-100 dark:border-red-700">
+            我不会使用搜索
+        </h2>
+        <div class="flex flex-col sm:flex-row w-full max-w-2xl space-y-4 sm:space-y-0 sm:space-x-4">
+            <input
+                type="text"
+                id="search-input"
+                placeholder="在这里输入搜索内容..."
+                class="flex-grow p-4 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg
+                             dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:focus:ring-blue-400"
+            />
+            <button
+                id="google-search-btn"
+                class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200
+                             dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-600"
+            >
+                谷歌搜索
+            </button>
+            <button
+                id="baidu-search-btn"
+                class="px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200
+                             dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-600"
+            >
+                百度搜索
+            </button>
+        </div>
+    </section>
+
+    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full max-w-6xl">
+        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
+                             dark:bg-gray-900/60">
+            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-blue-500 pb-3
+                             dark:text-gray-100 dark:border-blue-700">
+                常用工具
             </h2>
-            <div class="flex flex-col sm:flex-row w-full max-w-2xl space-y-4 sm:space-y-0 sm:space-x-4">
-                <input
-                    type="text"
-                    id="search-input"
-                    placeholder="在这里输入搜索内容..."
-                    class="flex-grow p-4 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg
-                                 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:focus:ring-blue-400"
-                />
-                <button
-                    id="google-search-btn"
-                    class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200
-                                 dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-600"
-                >
-                    谷歌搜索
-                </button>
-                <button
-                    id="baidu-search-btn"
-                    class="px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200
-                                 dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-600"
-                >
-                    百度搜索
-                </button>
-            </div>
+            <ul class="space-y-4">
+                <li>
+                    <a href="https://mail.qq.com" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
+                        <span class="mr-3">✉️</span> QQ 邮箱
+                    </a>
+                </li>
+                <li>
+                    <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
+                        <span class="mr-3">✉️</span> 谷歌邮箱
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.jsdelivr.com/" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
+                        <span class="mr-3">💻</span> jsDelivr
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.deepl.com/translator" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
+                        <span class="mr-3">🌐</span> DeepL 翻译
+                    </a>
+                </li>
+            </ul>
         </section>
 
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8">
-            <section class="bg-gray-800/60 p-10 rounded-2xl shadow-xl transform transition duration-300 hover:scale-105 hover:shadow-2xl
-                                 dark:bg-gray-900/60">
-                <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-blue-500 pb-3
-                                 dark:text-gray-100 dark:border-blue-700">
-                    常用工具
-                </h2>
-                <ul class="space-y-4">
-                    <li>
-                        <a href="https://www.baidu.com" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                            <span class="mr-3">&#x1F50D;</span> 百度搜索
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://mail.qq.com" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                            <span class="mr-3">&#x2709;&#xFE0F;</span> QQ 邮箱
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://fanyi.youdao.com" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                            <span class="mr-3">&#x1F310;</span> 有道翻译
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.wps.cn" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                            <span class="mr-3">&#x1F4BB;</span> WPS Office
-                        </a>
-                    </li>
-                </ul>
-            </section>
+        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
+                             dark:bg-gray-900/60">
+            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-green-500 pb-3
+                             dark:text-gray-100 dark:border-green-700">
+                学习资源
+            </h2>
+            <ul class="space-y-4">
+                <li>
+                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
+                        <span class="mr-3">💻</span> GitHub
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.ghxi.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
+                        <span class="mr-3">💬</span> 果核剥壳
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.gying.org/" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
+                        <span class="mr-3">🎥</span> 观影
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.bdgroup-lab.com/" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
+                        <span class="mr-3">📚</span> 编动小组
+                    </a>
+                </li>
+            </ul>
+        </section>
 
-            <section class="bg-gray-800/60 p-10 rounded-2xl shadow-xl transform transition duration-300 hover:scale-105 hover:shadow-2xl
-                                 dark:bg-gray-900/60">
-                <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-green-500 pb-3
-                                 dark:text-gray-100 dark:border-green-700">
-                    学习资源
-                </h2>
-                <ul class="space-y-4">
-                    <li>
-                        <a href="https://gitee.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                            <span class="mr-3">&#x1F4BB;</span> Gitee 码云
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.csdn.net" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                            <span class="mr-3">&#x1F4AC;</span> CSDN
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://study.163.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                            <span class="mr-3">&#x1F4DA;</span> 网易云课堂
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.xueersi.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                            <span class="mr-3">&#x1F393;</span> 学而思网校
-                        </a>
-                    </li>
-                </ul>
-            </section>
+        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
+                             dark:bg-gray-900/60">
+            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-purple-500 pb-3
+                             dark:text-gray-100 dark:border-purple-700">
+                社交媒体
+            </h2>
+            <ul class="space-y-4">
+                <li>
+                    <a href="https://www.douyin.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
+                        <span class="mr-3">🎥</span> 抖音
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
+                        <span class="mr-3">🎬</span> 哔哩哔哩
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
+                        <span class="mr-3">📸</span> Instagram
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
+                        <span class="mr-3">🎦</span> YouTube
+                    </a>
+                </li>
+            </ul>
+        </section>
 
-            <section class="bg-gray-800/60 p-10 rounded-2xl shadow-xl transform transition duration-300 hover:scale-105 hover:shadow-2xl
-                                 dark:bg-gray-900/60">
-                <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-purple-500 pb-3
-                                 dark:text-gray-100 dark:border-purple-700">
-                    社交媒体
-                </h2>
-                <ul class="space-y-4">
-                    <li>
-                        <a href="https://weibo.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                            <span class="mr-3">&#x1F4AD;</span> 微博
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.douyin.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                            <span class="mr-3">&#x1F3A5;</span> 抖音
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                            <span class="mr-3">&#x1F3AC;</span> 哔哩哔哩
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.zhihu.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                            <span class="mr-3">&#x1F4DA;</span> 知乎
-                        </a>
-                    </li>
-                </ul>
-            </section>
+        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
+                             dark:bg-gray-900/60">
+            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-teal-500 pb-3
+                             dark:text-gray-100 dark:border-teal-700">
+                学术工具
+            </h2>
+            <ul class="space-y-4">
+                <li>
+                    <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
+                        <span class="mr-3">🔍</span> 谷歌学术
+                    </a>
+                </li>
+                <li>
+                    <a href="https://xueshu.baidu.com/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
+                        <span class="mr-3">🔍</span> 百度学术
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.cnki.net/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
+                        <span class="mr-3">📖</span> 中国知网 (CNKI)
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.dotaindex.com/scholar" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
+                        <span class="mr-3">📚</span> 灯塔索引
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </main>
 
-            <section class="bg-gray-800/60 p-10 rounded-2xl shadow-xl transform transition duration-300 hover:scale-105 hover:shadow-2xl
-                                 dark:bg-gray-900/60">
-                <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-teal-500 pb-3
-                                 dark:text-gray-100 dark:border-teal-700">
-                    学术工具
-                </h2>
-                <ul id="academic-links-list" class="space-y-4">
-                    <li>
-                        <a href="https://xueshu.baidu.com/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                            <span class="mr-3">&#x1F50D;</span> 百度学术
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.cnki.net/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                            <span class="mr-3">&#x1F4D6;</span> 中国知网 (CNKI)
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.wanfangdata.com.cn/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                            <span class="mr-3">&#x1F4BC;</span> 万方数据
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.cqvip.com/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                            <span class="mr-3">&#x1F4DA;</span> 维普网
-                        </a>
-                    </li>
-                </ul>
-            </section>
-        </main>
-
-        <footer class="text-center text-gray-400 text-sm mt-10 pt-6 border-t border-gray-600
-                                 dark:text-gray-400 dark:border-gray-600">
-            &copy; 2025 我的导航站. 版权所有.
-        </footer>
-    </div>
+    <footer class="text-center text-sm mt-10 w-full max-w-6xl
+                             text-gray-900 dark:text-gray-100">
+        © 2025 我的导航站. 版权所有.
+    </footer>
 
     <script>
         // 获取搜索输入框和按钮的DOM元素引用
@@ -300,5 +341,28 @@
         // 每分钟检查一次时间并更新主题，确保时间变化时模式能及时切换
         setInterval(applyThemeBasedOnTime, 60 * 1000); // 60秒（1分钟）更新一次
     </script>
+<!--
+    <script>
+        // 鼠标点击特效 JavaScript
+        document.body.addEventListener('click', (event) => {
+            const heart = document.createElement('span');
+            heart.textContent = '❤️';
+            heart.classList.add('click-effect');
+            heart.style.left = `${event.clientX}px`;
+            heart.style.top = `${event.clientY}px`;
+            document.body.appendChild(heart);
+
+            // 触发动画
+            setTimeout(() => {
+                heart.classList.add('fade-out');
+            }, 10); // 短暂延迟以确保CSS过渡生效
+
+            // 动画结束后移除元素
+            heart.addEventListener('transitionend', () => {
+                heart.remove();
+            });
+        });
+    </script>
+-->
 </body>
 </html>
