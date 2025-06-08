@@ -4,119 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>余心留白🙄</title>
+    <!-- Tailwind CSS CDN，用于实用优先的样式设计 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 自定义字体 - Inter，提高文本可读性 */
+        /* 自定义字体 - 'YourCustomFont'，以提高可读性，并使用 Inter 作为备用字体 */
         @font-face {
-            font-family: 'YourCustomFont'; /* Define your custom font name */
-            /* Replace with the actual URL of your TTF font file. This URL points to a font file on GitHub Pages. */
+            font-family: 'YourCustomFont'; /* 定义你的自定义字体名称 */
+            /* URL 指向 GitHub Pages 上的字体文件。使用 'font-display: swap' 以提高性能。 */
             src: url('https://cdn.jsdelivr.net/gh/ONLYLOVELYKISS/onlylovelykiss.github.io@master/fonts/ark-pixel-12px-zh_cn.ttf') format('truetype');
-            font-weight: normal; /* Font weight */
-            font-style: normal; /* Font style */
-            font-display: swap; /* Font loading strategy, use fallback font during font loading */
+            font-weight: normal; /* 字体粗细 */
+            font-style: normal; /* 字体样式 */
+            font-display: swap; /* 字体加载策略，在字体加载期间使用备用字体 */
         }
 
         body {
-            font-family: 'YourCustomFont', 'Inter', sans-serif; /* Prioritize custom font, fallback to Inter or system sans-serif if loading fails */
+            font-family: 'YourCustomFont', 'Inter', sans-serif; /* 优先使用自定义字体，如果加载失败则回退到 Inter 或系统无衬线字体 */
         }
-        /* Ensure page and body elements occupy full viewport height, and remove default margins and padding */
+        
+        /* 确保页面和 body 元素占据整个视口高度，并移除默认的边距和内边距 */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
-            /* Full screen wallpaper settings */
+            /* 全屏壁纸设置 */
             background-image: url('https://cdn.jsdelivr.net/gh/ONLYLOVELYKISS/onlylovelykiss.github.io@master/img/Back.jpg');
-            background-size: cover; /* Ensure background image covers the entire element */
-            background-position: center center; /* Center the background image */
-            background-attachment: fixed; /* Fix background, does not scroll with the page */
+            background-size: cover; /* 确保背景图片覆盖整个元素 */
+            background-position: center center; /* 将背景图片居中 */
+            background-attachment: fixed; /* 固定背景，不随页面滚动 */
         }
-        /* Define transition effects for dark mode, making mode switching smoother */
+
+        /* 定义深色模式的过渡效果，使模式切换更平滑 */
         body.dark {
-            transition: background-color 0.5s ease; /* Background color transition */
+            transition: background-color 0.5s ease; /* 背景颜色过渡 */
         }
-        /* Transparency transition for main content area */
-        /* Original large box deleted, this rule no longer directly applies, but kept in case of future need */
-        .dark .bg-white\/60 {
+        
+        /* 每个部分的背景颜色过渡 */
+        .dark .bg-gray-800\/60 {
             transition: background-color 0.5s ease;
         }
-        /* Background color transition for each section */
-        .dark .bg-gray-800\/40 {
-            transition: background-color 0.5s ease;
-        }
-        /* Text color transition */
+
+        /* 各种元素的文本颜色过渡 */
         .dark h1, .dark h2, .dark p, .dark a, .dark footer {
             transition: color 0.5s ease;
         }
-        /* Distance from bottom copyright information to page bottom */
-        /* Adjusted to approximately 3cm (30px) */
+        
+        /* 底部版权信息到页面底部的距离 */
         footer {
-            margin-bottom: 30px; /* Restored to 30px, approximately 3cm */
+            margin-bottom: 30px; /* 大约 3 厘米 */
         }
 
-        /* Heading font color - removed gradient, restored to default or Tailwind color */
+        /* 标题字体颜色 - 恢复为默认或 Tailwind 颜色 */
         h1 {
-            /* Removed gradient related styles */
-            background-image: none;
+            background-image: none; /* 移除渐变相关样式 */
             -webkit-background-clip: unset;
             -webkit-text-fill-color: unset;
-            color: #1a202c; /* Default dark text color, similar to Tailwind text-gray-900 */
-        }
-        /* h1 color in dark mode */
-        .dark h1 {
-            color: #f7fafc; /* Light text color in dark mode, similar to Tailwind text-white */
+            color: #1a202c; /* 默认深色文本颜色，类似于 Tailwind 的 text-gray-900 */
         }
 
-        /* Mouse click effect styles */
+        /* 深色模式下 h1 的颜色 */
+        .dark h1 {
+            color: #f7fafc; /* 深色模式下浅色文本颜色，类似于 Tailwind 的 text-white */
+        }
+
+        /* 鼠标点击效果样式 */
         .click-effect {
             position: absolute;
-            pointer-events: none; /* Ensure it does not interfere with mouse events */
-            font-size: 1.5em; /* Smaller heart size */
+            pointer-events: none; /* 确保它不干扰鼠标事件 */
+            font-size: 1.5em; /* 较小的心形大小 */
             opacity: 1;
-            transform: translate(-50%, -50%); /* Centered at click point */
-            transition: all 0.6s ease-out; /* Animation effect */
-            z-index: 9999; /* Ensure it's on top */
+            transform: translate(-50%, -50%); /* 居中于点击点 */
+            transition: all 0.6s ease-out; /* 动画效果 */
+            z-index: 9999; /* 确保它在最上层 */
         }
         .click-effect.fade-out {
             opacity: 0;
-            transform: translate(-50%, -100px); /* Moves up and fades out */
+            transform: translate(-50%, -100px); /* 向上移动并淡出 */
         }
     </style>
 </head>
-<!-- 
-    Overall code review and optimization:
-    - HTML structure is clear and semantic.
-    - Meta tags are correctly set for good mobile adaptation and scaling.
-    - Tailwind CSS CDN is correctly included and its responsive classes are fully utilized.
-    - Custom font loading and fallback strategy are reasonable.
-    - Global styles (background, height, margins) are well-set, ensuring the basic page layout.
-    - Dark mode CSS transition effect is smooth.
-    - Body tag classes (min-h-screen, flex, flex-col, items-center, px/py, space-y-12) work together to ensure overall vertical layout, centering, responsive padding, and vertical spacing between main content blocks.
-    - The original large box has been removed, its content (header, section, main) are now direct children of the body.
-    - Each section's layout (grid, gap, p-4) maintains content neatness and responsiveness.
-    - Links and content for each section have been updated as per user request.
-    - Footer is independent of main content, and correctly set for centering, font color (black in light mode, light gray in dark mode), and distance from the bottom of the page.
-    - JavaScript functions (search, theme switching) are clear and correctly implemented.
-    - Horizontal padding on the body (px-8 sm:px-16 lg:px-24) was adjusted to increase the distance of the large box from the left and right edges of the page.
-    - Padding of sections (px-3 py-4) was adjusted to reduce the size of each section.
-    - Shadow size of sections was reduced (shadow-xl changed to shadow-md).
-    - Gradient effect on h1 title was removed, and mouse click effect "❤️" was added.
-    - Mouse click effect size was reduced (font-size: 1.5em).
--->
 <body class="min-h-screen flex flex-col items-center px-8 sm:px-16 lg:px-24 py-8 space-y-12 dark:bg-gray-900">
     <header class="text-center">
         <h1 class="text-6xl font-extrabold mb-4 tracking-tight">
             余心留白🙄
         </h1>
-        <p class="text-xl text-gray-700
-                         dark:text-gray-200">
+        <p class="text-xl text-gray-700 dark:text-gray-200">
             如果你喜欢一个女孩，就好好努力多挣钱，到时候多随点份子钱。
         </p>
     </header>
 
     <section class="flex flex-col items-center justify-center px-3 py-4 bg-gray-800/60 rounded-2xl shadow-md space-y-6
-                             dark:bg-gray-900/60 w-full max-w-6xl">
+                           dark:bg-gray-900/60 w-full max-w-6xl">
         <h2 class="text-3xl font-semibold text-white border-b-2 border-red-500 pb-3 mb-3
-                             dark:text-gray-100 dark:border-red-700">
+                           dark:text-gray-100 dark:border-red-700">
             我不会使用搜索
         </h2>
         <div class="flex flex-col sm:flex-row w-full max-w-2xl space-y-4 sm:space-y-0 sm:space-x-4">
@@ -125,19 +104,19 @@
                 id="search-input"
                 placeholder="在这里输入搜索内容..."
                 class="flex-grow p-4 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg
-                             dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:focus:ring-blue-400"
+                               dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:focus:ring-blue-400"
             />
             <button
                 id="google-search-btn"
                 class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200
-                             dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-600"
+                               dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-600"
             >
                 谷歌搜索
             </button>
             <button
                 id="baidu-search-btn"
                 class="px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200
-                             dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-600"
+                               dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-600"
             >
                 百度搜索
             </button>
@@ -146,9 +125,9 @@
 
     <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full max-w-6xl">
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                             dark:bg-gray-900/60">
+                               dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-blue-500 pb-3
-                             dark:text-gray-100 dark:border-blue-700">
+                               dark:text-gray-100 dark:border-blue-700">
                 常用工具
             </h2>
             <ul class="space-y-4">
@@ -176,9 +155,9 @@
         </section>
 
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                             dark:bg-gray-900/60">
+                               dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-green-500 pb-3
-                             dark:text-gray-100 dark:border-green-700">
+                               dark:text-gray-100 dark:border-green-700">
                 学习资源
             </h2>
             <ul class="space-y-4">
@@ -206,9 +185,9 @@
         </section>
 
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                             dark:bg-gray-900/60">
+                               dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-purple-500 pb-3
-                             dark:text-gray-100 dark:border-purple-700">
+                               dark:text-gray-100 dark:border-purple-700">
                 社交媒体
             </h2>
             <ul class="space-y-4">
@@ -236,9 +215,9 @@
         </section>
 
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                             dark:bg-gray-900/60">
+                               dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-teal-500 pb-3
-                             dark:text-gray-100 dark:border-teal-700">
+                               dark:text-gray-100 dark:border-teal-700">
                 学术工具
             </h2>
             <ul class="space-y-4">
@@ -267,12 +246,12 @@
     </main>
 
     <footer class="text-center text-sm mt-10 w-full max-w-6xl
-                             text-gray-900 dark:text-gray-100">
+                               text-gray-900 dark:text-gray-100">
         © 2025 我的导航站. 版权所有.
     </footer>
 
     <script>
-        // 获取搜索输入框和按钮的DOM元素引用
+        // 获取搜索输入框和按钮的 DOM 元素引用
         const searchInput = document.getElementById('search-input');
         const googleSearchBtn = document.getElementById('google-search-btn');
         const baiduSearchBtn = document.getElementById('baidu-search-btn');
@@ -281,12 +260,12 @@
         googleSearchBtn.addEventListener('click', () => {
             const query = searchInput.value.trim(); // 获取输入框内容并去除首尾空格
             if (query) { // 如果输入内容不为空
-                // 构建谷歌搜索URL，使用encodeURIComponent对查询字符串进行编码以处理特殊字符
+                // 构建谷歌搜索 URL，使用 encodeURIComponent 对查询字符串进行编码以处理特殊字符
                 const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
                 window.open(googleUrl, '_blank'); // 在新标签页打开搜索结果
             } else {
                 // 如果输入为空，在控制台输出提示
-                console.error('请输入搜索内容'); // Changed to console.error for better visibility
+                console.error('请输入搜索内容'); 
             }
         });
 
@@ -294,12 +273,12 @@
         baiduSearchBtn.addEventListener('click', () => {
             const query = searchInput.value.trim(); // 获取输入框内容并去除首尾空格
             if (query) { // 如果输入内容不为空
-                // 构建百度搜索URL，使用encodeURIComponent对查询字符串进行编码
+                // 构建百度搜索 URL，使用 encodeURIComponent 对查询字符串进行编码
                 const baiduUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`;
                 window.open(baiduUrl, '_blank'); // 在新标签页打开搜索结果
             } else {
                 // 如果输入为空，在控制台输出提示
-                console.error('请输入搜索内容'); // Changed to console.error for better visibility
+                console.error('请输入搜索内容'); 
             }
         });
 
@@ -319,31 +298,34 @@
             // 获取当前北京时间的小时数 (UTC+8)
             const options = {
                 hour: 'numeric',    // 获取小时数
-                hourCycle: 'h23',    // 使用24小时制
+                hourCycle: 'h23',   // 使用24小时制
                 timeZone: 'Asia/Shanghai' // 指定时区为北京时间
             };
             // 将当前时间转换为北京时间的小时数
             const beijingHour = parseInt(now.toLocaleString('en-US', options));
 
-            const body = document.body; // 获取body元素
-            // 判断当前是否为白天（早上6点到晚上6点之前）
+            const body = document.body; // 获取 body 元素
+            // 判断当前是否为白天（早上 6 点到晚上 6 点之前）
             const isDaytime = beijingHour >= 6 && beijingHour < 18; // 6:00 - 17:59
 
             if (isDaytime) {
-                body.classList.remove('dark'); // 如果是白天，移除body上的'dark'类（切换到浅色模式）
+                body.classList.remove('dark'); // 如果是白天，移除 body 上的 'dark' 类（切换到浅色模式）
             } else {
-                body.classList.add('dark');    // 如果是夜晚，添加body上的'dark'类（切换到深色模式）
+                body.classList.add('dark');    // 如果是夜晚，添加 body 上的 'dark' 类（切换到深色模式）
             }
+
+            // 记录当前北京时间和小主题状态以进行调试
+            console.log(`当前北京时间: ${beijingHour} 点`);
+            console.log(`是否为白天: ${isDaytime}`);
+            console.log(`主题模式: ${body.classList.contains('dark') ? '深色' : '浅色'}`);
         }
 
         // 页面加载完成后立即应用主题
         document.addEventListener('DOMContentLoaded', applyThemeBasedOnTime);
         // 每分钟检查一次时间并更新主题，确保时间变化时模式能及时切换
-        setInterval(applyThemeBasedOnTime, 60 * 1000); // 60秒（1分钟）更新一次
-    </script>
-<!--
-    <script>
-        // 鼠标点击特效 JavaScript
+        setInterval(applyThemeBasedOnTime, 60 * 1000); // 60 秒（1 分钟）更新一次
+
+        // 鼠标点击效果 JavaScript
         document.body.addEventListener('click', (event) => {
             const heart = document.createElement('span');
             heart.textContent = '❤️';
@@ -355,7 +337,7 @@
             // 触发动画
             setTimeout(() => {
                 heart.classList.add('fade-out');
-            }, 10); // 短暂延迟以确保CSS过渡生效
+            }, 10); // 短暂延迟以确保 CSS 过渡生效
 
             // 动画结束后移除元素
             heart.addEventListener('transitionend', () => {
@@ -363,6 +345,5 @@
             });
         });
     </script>
--->
 </body>
 </html>
