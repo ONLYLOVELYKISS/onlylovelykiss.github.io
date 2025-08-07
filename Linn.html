@@ -17,31 +17,40 @@
             font-display: swap; /* 字体加载策略，在字体加载期间使用备用字体 */
         }
 
-        body {
-            font-family: 'YourCustomFont', 'Inter', sans-serif; /* 优先使用自定义字体，如果加载失败则回退到 Inter 或系统无衬线字体 */
-        }
-        
-        /* 确保页面和 body 元素占据整个视口高度，并移除默认的边距和内边距 */
-        html, body {
-            height: 80%;
+        /* 确保 HTML 元素占据整个视口高度，并设置背景图片 */
+        html {
+            height: 100%;
             margin: 0;
             padding: 0;
-            /* 全屏壁纸设置 */
             background-image: url('https://cdn.jsdelivr.net/gh/ONLYLOVELYKISS/onlylovelykiss.github.io@master/img/Back.jpg');
             background-size: cover; /* 确保背景图片覆盖整个元素 */
             background-position: center center; /* 将背景图片居中 */
             background-attachment: fixed; /* 固定背景，不随页面滚动 */
-            margin-bottom: 2.54cm; /* 添加底部页边距 */
+        }
+
+        body {
+            font-family: 'YourCustomFont', 'Inter', sans-serif; /* 优先使用自定义字体，如果加载失败则回退到 Inter 或系统无衬线字体 */
+            /* min-h-screen (min-height: 100vh) 已通过 Tailwind CSS 类应用于 body 标签 */
+            margin: 0; /* 移除默认的 body 边距 */
+            padding: 0; /* 移除默认的 body 内边距 */
         }
 
         /* 定义深色模式的过渡效果，使模式切换更平滑 */
         body.dark {
+            /* 修正深色模式下的背景颜色为半透明黑色，使其不覆盖背景图 */
+            background-color: rgba(0, 0, 0, 0.5); 
             transition: background-color 0.5s ease; /* 背景颜色过渡 */
+        }
+
+        /* 修复白天模式下的背景颜色，确保背景图可见 */
+        body:not(.dark) {
+            background-color: transparent;
         }
         
         /* 每个部分的背景颜色过渡 */
         .dark .bg-gray-800\/60 {
             transition: background-color 0.5s ease;
+            background-color: rgba(255, 255, 255, 0.2); /* 在暗黑模式下，区块背景设置为浅色半透明 */
         }
 
         /* 各种元素的文本颜色过渡 */
@@ -99,10 +108,10 @@
         <!--
         <p class="text-xl text-gray-700 dark:text-gray-200">
             如果你喜欢一个女孩，就好好努力多挣钱，到时候多随点份子钱。
-        </p> 
+        </p>
         -->
         <!-- 一言 (Hitokoto) 显示区域 -->
-        <h5 class="mt-4 text-lg text-gray-600 dark:text-gray-300">
+        <h5 class="mt-4 text-lg text-gray-700 dark:text-gray-200">
             <p id="hitokoto"></p>
             <script src="https://v1.hitokoto.cn/?encode=js&amp;select=%23hitokoto" defer=""></script>
         </h5>
@@ -263,6 +272,11 @@
         </section>
     </main>
 
+    <!-- 遵循X.com极简风格的页脚 -->
+    <footer class="mt-auto py-8 text-center text-gray-900 dark:text-gray-100">
+        <p>Kangの小小世界</p>
+    </footer>
+
     <script>
         // 获取搜索输入框、按钮和错误消息元素的 DOM 引用
         const searchInput = document.getElementById('search-input');
@@ -315,41 +329,141 @@
             }
         });
 
-        /**
-         * 根据北京时间自动切换页面的深色/浅色模式。
-         * 白天（6:00 - 17:59）显示浅色模式，夜晚（18:00 - 5:59）显示深色模式。
-         */
-        function applyThemeBasedOnTime() {
-            const now = new Date(); // 获取当前日期和时间
-            // 获取当前北京时间的小时数 (UTC+8)
-            const options = {
-                hour: 'numeric',    // 获取小时数
-                hourCycle: 'h23',   // 使用24小时制
-                timeZone: 'Asia/Shanghai' // 指定时区为北京时间
+        // 禁用右键默认菜单并跳转到指定网页
+        document.addEventListener('contextmenu', (event) => {
+            event.preventDefault(); // 阻止默认的右键菜单
+            window.location.href = 'https://www.gov.cn/'; // 跳转到指定网址
+        });
+
+        // 加密函数：每次调用都会生成一个新的随机密钥
+        async function encryptData(data) {
+            // 使用AES-GCM算法生成一个256位的随机密钥
+            const key = await window.crypto.subtle.generateKey(
+                { name: "AES-GCM", length: 256 },
+                true,
+                ["encrypt", "decrypt"]
+            );
+
+            // 生成一个12字节的随机初始化向量（IV）
+            const iv = window.crypto.getRandomValues(new Uint8Array(12));
+            const encoder = new TextEncoder();
+            const encodedData = encoder.encode(JSON.stringify(data));
+
+            // 使用生成的密钥和IV进行加密
+            const encrypted = await window.crypto.subtle.encrypt(
+                { name: "AES-GCM", iv: iv },
+                key,
+                encodedData
+            );
+
+            // 导出密钥，以便后续解密（在实际应用中，密钥会安全地传输到服务器）
+            const exportedKey = await window.crypto.subtle.exportKey("jwk", key);
+            
+            // 返回加密后的数据、IV和密钥
+            // 在此，我们不将任何信息输出到控制台，以增强安全性
+            return {
+                encryptedData: btoa(String.fromCharCode(...new Uint8Array(encrypted))),
+                iv: btoa(String.fromCharCode(...iv)),
+                key: JSON.stringify(exportedKey)
             };
-            // 将当前时间转换为北京时间的小时数
-            const beijingHour = parseInt(now.toLocaleString('en-US', options));
+        }
 
-            const body = document.body; // 获取 body 元素
-            // 判断当前是否为白天（早上 6 点到晚上 6 点之前）
-            const isDaytime = beijingHour >= 6 && beijingHour < 18; // 6:00 - 17:59
+        /**
+         * 检查当前时间是否在日出和日落之间。
+         * @param {Date} now - 当前时间对象。
+         * @param {string} sunriseUtc - 日出时间 (UTC)。
+         * @param {string} sunsetUtc - 日落时间 (UTC)。
+         * @returns {boolean} - 如果是白天，返回 true。
+         */
+        function isDaytime(now, sunriseUtc, sunsetUtc) {
+            const sunriseTime = new Date(now.toDateString() + ' ' + sunriseUtc);
+            const sunsetTime = new Date(now.toDateString() + ' ' + sunsetUtc);
+            
+            // 处理日出日落跨天的情况，例如日出在今天，日落在明天
+            if (sunsetTime < sunriseTime) {
+                if (now < sunriseTime) {
+                    sunriseTime.setDate(sunriseTime.getDate() - 1);
+                } else {
+                    sunsetTime.setDate(sunsetTime.getDate() + 1);
+                }
+            }
+            
+            return now >= sunriseTime && now < sunsetTime;
+        }
 
-            if (isDaytime) {
-                body.classList.remove('dark'); // 如果是白天，移除 body 上的 'dark' 类（切换到浅色模式）
-            } else {
-                body.classList.add('dark');    // 如果是夜晚，添加 body 上的 'dark' 类（切换到深色模式）
+        /**
+         * 根据日出日落时间应用主题。
+         */
+        async function applyThemeBasedOnSunTimes() {
+            const now = new Date();
+            let isDarkMode = false; // 默认是浅色模式
+
+            try {
+                // 获取地理位置
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                });
+
+                const { latitude, longitude } = position.coords;
+                // 对位置信息进行加密，但不将结果输出到控制台
+                await encryptData({ latitude, longitude });
+
+                // 获取日出日落时间
+                const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&formatted=0`);
+                const data = await response.json();
+
+                if (data.status === 'OK') {
+                    const sunriseUtc = data.results.sunrise;
+                    const sunsetUtc = data.results.sunset;
+                    
+                    if (!isDaytime(now, sunriseUtc, sunsetUtc)) {
+                        isDarkMode = true;
+                        // 不在控制台输出敏感信息
+                    } else {
+                        // 不在控制台输出敏感信息
+                    }
+                } else {
+                    isDarkMode = applyFallbackTheme();
+                }
+
+            } catch (error) {
+                isDarkMode = applyFallbackTheme();
             }
 
-            // 记录当前北京时间和小主题状态以进行调试
-            console.log(`当前北京时间: ${beijingHour} 点`);
-            console.log(`是否为白天: ${isDaytime}`);
-            console.log(`主题模式: ${body.classList.contains('dark') ? '深色' : '浅色'}`);
+            const body = document.body;
+            if (isDarkMode) {
+                body.classList.add('dark');
+            } else {
+                body.classList.remove('dark');
+            }
+        }
+
+        /**
+         * 回退到基于北京时间的默认主题模式。
+         * @returns {boolean} - 是否为暗黑模式。
+         */
+        function applyFallbackTheme() {
+            const now = new Date();
+            let beijingHour;
+            try {
+                const options = {
+                    hour: 'numeric',
+                    hourCycle: 'h23',
+                    timeZone: 'Asia/Shanghai'
+                };
+                beijingHour = parseInt(now.toLocaleString('en-US', options));
+            } catch (e) {
+                beijingHour = now.getHours();
+            }
+
+            const isDaytimeByHour = beijingHour >= 6 && beijingHour < 18;
+            return !isDaytimeByHour;
         }
 
         // 页面加载完成后立即应用主题
-        document.addEventListener('DOMContentLoaded', applyThemeBasedOnTime);
-        // 每分钟检查一次时间并更新主题，确保时间变化时模式能及时切换
-        setInterval(applyThemeBasedOnTime, 60 * 1000); // 60 秒（1 分钟）更新一次
+        document.addEventListener('DOMContentLoaded', applyThemeBasedOnSunTimes);
+        // 每小时更新一次主题，确保日出日落时间变化时模式能及时切换
+        setInterval(applyThemeBasedOnSunTimes, 60 * 60 * 1000); // 60分钟（1小时）更新一次
 
         // 鼠标点击效果 JavaScript
         document.body.addEventListener('click', (event) => {
@@ -373,4 +487,3 @@
     </script>
 </body>
 </html>
-
