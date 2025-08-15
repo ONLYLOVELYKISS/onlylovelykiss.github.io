@@ -30,15 +30,16 @@
 
         body {
             font-family: 'YourCustomFont', 'Inter', sans-serif; /* 优先使用自定义字体，如果加载失败则回退到 Inter 或系统无衬线字体 */
-            /* min-h-screen (min-height: 100vh) 已通过 Tailwind CSS 类应用于 body 标签 */
+            min-height: 100vh;
             margin: 0; /* 移除默认的 body 边距 */
             padding: 0; /* 移除默认的 body 内边距 */
+            overflow-x: hidden; /* 防止因为侧边栏出现横向滚动条 */
         }
 
         /* 定义深色模式的过渡效果，使模式切换更平滑 */
         body.dark {
             /* 修正深色模式下的背景颜色为半透明黑色，使其不覆盖背景图 */
-            background-color: rgba(0, 0, 0, 0.5); 
+            background-color: rgba(0, 0, 0, 0.5);
             transition: background-color 0.5s ease; /* 背景颜色过渡 */
         }
 
@@ -71,19 +72,21 @@
             color: #f7fafc; /* 深色模式下浅色文本颜色，类似于 Tailwind 的 text-white */
         }
 
-        /* 鼠标点击效果样式 */
+        /* 鼠标点击效果样式 - 修复了初始位置，让其在点击瞬间居中 */
         .click-effect {
             position: absolute;
             pointer-events: none; /* 确保它不干扰鼠标事件 */
             font-size: 1.5em; /* 较小的心形大小 */
             opacity: 1;
-            transform: translate(-50%, -200%); /* 居中于点击点 */
+            /* 调整为在点击位置居中，并向上偏移 */
+            transform: translate(-50%, -200%);
             transition: all 0.6s ease-out; /* 动画效果 */
             z-index: 9999; /* 确保它在最上层 */
         }
         .click-effect.fade-out {
             opacity: 0;
-            transform: translate(-50%, -150px) scale(0.5);/* 向上移动并淡出 */
+            /* 调整为向上移动并淡出，距离更合理 */
+            transform: translate(-50%, -150px) scale(0.5);
         }
 
         /* 搜索输入框为空时的提示样式 */
@@ -98,18 +101,152 @@
         .error-message.show {
             opacity: 1;
         }
+        
+        /* --- 侧边栏优化和修复 --- */
+        #sidebar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 50;
+            display: flex;
+            transform: translateX(-256px); /* 默认隐藏侧边栏，宽度为256px */
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        #sidebar-container.open {
+            transform: translateX(0); /* 点击按钮时显示侧边栏 */
+        }
+        
+        #sidebar {
+            width: 256px;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            flex-shrink: 0;
+        }
+        
+        #sidebar-toggle {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateX(-70%) translateY(-50%); /* 初始时部分隐藏 */
+            width: 40px;
+            height: 64px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 51; /* 确保按钮在侧边栏上方 */
+        }
+
+        #sidebar-toggle:hover {
+            transform: translateX(0) translateY(-50%); /* 鼠标悬停时完全浮现 */
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        #sidebar-toggle svg {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #sidebar-container.open + #sidebar-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 767px) {
+            #sidebar-container {
+                width: 100%;
+                max-width: 100%;
+                transform: translateX(-100%);
+            }
+
+            #sidebar-container.open {
+                transform: translateX(0);
+            }
+
+            #sidebar {
+                width: 100%;
+                border-radius: 0;
+                padding: 1rem;
+            }
+
+            #sidebar-toggle {
+                left: calc(100% - 40px);
+                transform: translateX(0) translateY(-50%);
+                border-radius: 1rem 0 0 1rem;
+                transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, left 0.3s ease-in-out;
+            }
+            
+            #sidebar-container.open + #sidebar-toggle {
+                left: 100%; /* When the sidebar opens, the button moves outside the viewport */
+                transform: translateX(-100%) translateY(-50%);
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center px-8 sm:px-16 lg:px-24 py-8 space-y-12 dark:bg-gray-900">
+
+    <!-- 左侧可拉列表区域 -->
+    <div id="sidebar-container">
+        <div id="sidebar" class="flex flex-col">
+            <div class="flex-grow">
+                <h3 class="text-2xl font-bold mb-4 border-b-2 border-red-500 pb-2">导航</h3>
+                <ul class="space-y-4">
+                    <li>
+                        <a href="#" class="text-white text-lg font-medium hover:text-red-300 transition-colors duration-200">
+                            作者
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-white text-lg font-medium hover:text-red-300 transition-colors duration-200">
+                            AI集合
+                        </a>
+                        <ul class="space-y-2 pt-2 pl-4">
+                            <li>
+                                <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="text-white text-base hover:text-red-300 transition-colors duration-200">
+                                    Gemini
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://chat.openai.com/" target="_blank" rel="noopener noreferrer" class="text-white text-base hover:text-red-300 transition-colors duration-200">
+                                    ChatGPT
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://gork.ai/" target="_blank" rel="noopener noreferrer" class="text-white text-base hover:text-red-300 transition-colors duration-200">
+                                    Gork
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 侧边栏触发按钮 -->
+    <div id="sidebar-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+    </div>
+    
     <header class="text-center">
         <h1 class="text-6xl font-extrabold mb-4 tracking-tight">
             余心留白🙄
         </h1>
-        <!--
-        <p class="text-xl text-gray-700 dark:text-gray-200">
-            如果你喜欢一个女孩，就好好努力多挣钱，到时候多随点份子钱。
-        </p>
-        -->
         <!-- 一言 (Hitokoto) 显示区域 -->
         <h5 class="mt-4 text-lg text-gray-700 dark:text-gray-200">
             <p id="hitokoto"></p>
@@ -118,9 +255,9 @@
     </header>
 
     <section class="flex flex-col items-center justify-center px-3 py-4 bg-gray-800/60 rounded-2xl shadow-md space-y-6
-                            dark:bg-gray-900/60 w-full max-w-6xl">
+                    dark:bg-gray-900/60 w-full max-w-6xl">
         <h2 class="text-3xl font-semibold text-white border-b-2 border-red-500 pb-3 mb-3
-                            dark:text-gray-100 dark:border-red-700">
+                    dark:text-gray-100 dark:border-red-700">
             我不会使用搜索
         </h2>
         <div class="flex flex-col sm:flex-row w-full max-w-2xl space-y-4 sm:space-y-0 sm:space-x-4">
@@ -129,19 +266,19 @@
                 id="search-input"
                 placeholder="在这里输入搜索内容..."
                 class="flex-grow p-4 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg
-                                dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:focus:ring-blue-400"
+                        dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:focus:ring-blue-400"
             />
             <button
                 id="google-search-btn"
                 class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200
-                                dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-600"
+                        dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-600"
             >
                 谷歌搜索
             </button>
             <button
                 id="baidu-search-btn"
                 class="px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200
-                                dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-600"
+                        dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-600"
             >
                 百度搜索
             </button>
@@ -152,9 +289,9 @@
 
     <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full max-w-6xl">
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                                dark:bg-gray-900/60">
+                         dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-blue-500 pb-3
-                                dark:text-gray-100 dark:border-blue-700">
+                         dark:text-gray-100 dark:border-blue-700">
                 常用工具
             </h2>
             <ul class="space-y-4">
@@ -182,9 +319,9 @@
         </section>
 
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                                dark:bg-gray-900/60">
+                         dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-green-500 pb-3
-                                dark:text-gray-100 dark:border-green-700">
+                         dark:text-gray-100 dark:border-green-700">
                 学习资源
             </h2>
             <ul class="space-y-4">
@@ -212,9 +349,9 @@
         </section>
 
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                                dark:bg-gray-900/60">
+                         dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-purple-500 pb-3
-                                dark:text-gray-100 dark:border-purple-700">
+                         dark:text-gray-100 dark:border-purple-700">
                 社交媒体
             </h2>
             <ul class="space-y-4">
@@ -242,9 +379,9 @@
         </section>
 
         <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                                dark:bg-gray-900/60">
+                         dark:bg-gray-900/60">
             <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-teal-500 pb-3
-                                dark:text-gray-100 dark:border-teal-700">
+                         dark:text-gray-100 dark:border-teal-700">
                 学术工具
             </h2>
             <ul class="space-y-4">
@@ -278,211 +415,101 @@
     </footer>
 
     <script>
-        // 获取搜索输入框、按钮和错误消息元素的 DOM 引用
-        const searchInput = document.getElementById('search-input');
-        const googleSearchBtn = document.getElementById('google-search-btn');
-        const baiduSearchBtn = document.getElementById('baidu-search-btn');
-        const searchErrorMessage = document.getElementById('search-error-message');
-
-        /**
-         * 显示搜索错误消息。
-         */
-        function showSearchError() {
-            searchErrorMessage.classList.add('show');
-            // 2秒后自动隐藏错误消息
-            setTimeout(() => {
-                searchErrorMessage.classList.remove('show');
-            }, 2000);
-        }
-
-        /**
-         * 执行搜索操作。
-         * @param {string} searchEngine - 搜索引擎名称 ('google' 或 'baidu')。
-         */
-        function performSearch(searchEngine) {
-            const query = searchInput.value.trim(); // 获取输入框内容并去除首尾空格
-            if (query) { // 如果输入内容不为空
-                let url;
-                if (searchEngine === 'google') {
-                    // 构建谷歌搜索 URL，使用 encodeURIComponent 对查询字符串进行编码以处理特殊字符
-                    url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-                } else if (searchEngine === 'baidu') {
-                    // 构建百度搜索 URL，使用 encodeURIComponent 对查询字符串进行编码
-                    url = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`;
-                }
-                window.open(url, '_blank'); // 在新标签页打开搜索结果
-            } else {
-                showSearchError(); // 如果输入为空，显示错误消息
+        document.addEventListener('DOMContentLoaded', () => {
+            // 获取搜索输入框、按钮和错误消息元素的 DOM 引用
+            const searchInput = document.getElementById('search-input');
+            const googleSearchBtn = document.getElementById('google-search-btn');
+            const baiduSearchBtn = document.getElementById('baidu-search-btn');
+            const searchErrorMessage = document.getElementById('search-error-message');
+        
+            /**
+             * 显示搜索错误消息。
+             */
+            function showSearchError() {
+                searchErrorMessage.classList.add('show');
+                // 2秒后自动隐藏错误消息
+                setTimeout(() => {
+                    searchErrorMessage.classList.remove('show');
+                }, 2000);
             }
-        }
-
-        // 谷歌搜索功能实现
-        googleSearchBtn.addEventListener('click', () => performSearch('google'));
-
-        // 百度搜索功能实现
-        baiduSearchBtn.addEventListener('click', () => performSearch('baidu'));
-
-        // 允许在搜索输入框中按回车键进行谷歌搜索
-        searchInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') { // 如果按下的键是“Enter”
-                performSearch('google'); // 模拟点击谷歌搜索按钮
-            }
-        });
-
-        // 禁用右键默认菜单并跳转到指定网页
-        document.addEventListener('contextmenu', (event) => {
-            event.preventDefault(); // 阻止默认的右键菜单
-            window.location.href = 'https://www.gov.cn/'; // 跳转到指定网址
-        });
-
-        // 加密函数：每次调用都会生成一个新的随机密钥
-        async function encryptData(data) {
-            // 使用AES-GCM算法生成一个256位的随机密钥
-            const key = await window.crypto.subtle.generateKey(
-                { name: "AES-GCM", length: 256 },
-                true,
-                ["encrypt", "decrypt"]
-            );
-
-            // 生成一个12字节的随机初始化向量（IV）
-            const iv = window.crypto.getRandomValues(new Uint8Array(12));
-            const encoder = new TextEncoder();
-            const encodedData = encoder.encode(JSON.stringify(data));
-
-            // 使用生成的密钥和IV进行加密
-            const encrypted = await window.crypto.subtle.encrypt(
-                { name: "AES-GCM", iv: iv },
-                key,
-                encodedData
-            );
-
-            // 导出密钥，以便后续解密（在实际应用中，密钥会安全地传输到服务器）
-            const exportedKey = await window.crypto.subtle.exportKey("jwk", key);
-            
-            // 返回加密后的数据、IV和密钥
-            // 在此，我们不将任何信息输出到控制台，以增强安全性
-            return {
-                encryptedData: btoa(String.fromCharCode(...new Uint8Array(encrypted))),
-                iv: btoa(String.fromCharCode(...iv)),
-                key: JSON.stringify(exportedKey)
-            };
-        }
-
-        /**
-         * 检查当前时间是否在日出和日落之间。
-         * @param {Date} now - 当前时间对象。
-         * @param {string} sunriseUtc - 日出时间 (UTC)。
-         * @param {string} sunsetUtc - 日落时间 (UTC)。
-         * @returns {boolean} - 如果是白天，返回 true。
-         */
-        function isDaytime(now, sunriseUtc, sunsetUtc) {
-            const sunriseTime = new Date(now.toDateString() + ' ' + sunriseUtc);
-            const sunsetTime = new Date(now.toDateString() + ' ' + sunsetUtc);
-            
-            // 处理日出日落跨天的情况，例如日出在今天，日落在明天
-            if (sunsetTime < sunriseTime) {
-                if (now < sunriseTime) {
-                    sunriseTime.setDate(sunriseTime.getDate() - 1);
-                } else {
-                    sunsetTime.setDate(sunsetTime.getDate() + 1);
-                }
-            }
-            
-            return now >= sunriseTime && now < sunsetTime;
-        }
-
-        /**
-         * 根据日出日落时间应用主题。
-         */
-        async function applyThemeBasedOnSunTimes() {
-            const now = new Date();
-            let isDarkMode = false; // 默认是浅色模式
-
-            try {
-                // 获取地理位置
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-                });
-
-                const { latitude, longitude } = position.coords;
-                // 对位置信息进行加密，但不将结果输出到控制台
-                await encryptData({ latitude, longitude });
-
-                // 获取日出日落时间
-                const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&formatted=0`);
-                const data = await response.json();
-
-                if (data.status === 'OK') {
-                    const sunriseUtc = data.results.sunrise;
-                    const sunsetUtc = data.results.sunset;
-                    
-                    if (!isDaytime(now, sunriseUtc, sunsetUtc)) {
-                        isDarkMode = true;
-                        // 不在控制台输出敏感信息
-                    } else {
-                        // 不在控制台输出敏感信息
+        
+            /**
+             * 执行搜索操作。
+             * @param {string} searchEngine - 搜索引擎名称 ('google' 或 'baidu')。
+             */
+            function performSearch(searchEngine) {
+                const query = searchInput.value.trim(); // 获取输入框内容并去除首尾空格
+                if (query) { // 如果输入内容不为空
+                    let url;
+                    if (searchEngine === 'google') {
+                        // 构建谷歌搜索 URL，使用 encodeURIComponent 对查询字符串进行编码以处理特殊字符
+                        url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                    } else if (searchEngine === 'baidu') {
+                        // 构建百度搜索 URL，使用 encodeURIComponent 对查询字符串进行编码
+                        url = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`;
                     }
+                    window.open(url, '_blank'); // 在新标签页打开搜索结果
                 } else {
-                    isDarkMode = applyFallbackTheme();
+                    showSearchError(); // 如果输入为空，显示错误消息
                 }
-
-            } catch (error) {
-                isDarkMode = applyFallbackTheme();
             }
-
-            const body = document.body;
-            if (isDarkMode) {
-                body.classList.add('dark');
-            } else {
-                body.classList.remove('dark');
-            }
-        }
-
-        /**
-         * 回退到基于北京时间的默认主题模式。
-         * @returns {boolean} - 是否为暗黑模式。
-         */
-        function applyFallbackTheme() {
-            const now = new Date();
-            let beijingHour;
-            try {
-                const options = {
-                    hour: 'numeric',
-                    hourCycle: 'h23',
-                    timeZone: 'Asia/Shanghai'
-                };
-                beijingHour = parseInt(now.toLocaleString('en-US', options));
-            } catch (e) {
-                beijingHour = now.getHours();
-            }
-
-            const isDaytimeByHour = beijingHour >= 6 && beijingHour < 18;
-            return !isDaytimeByHour;
-        }
-
-        // 页面加载完成后立即应用主题
-        document.addEventListener('DOMContentLoaded', applyThemeBasedOnSunTimes);
-        // 每小时更新一次主题，确保日出日落时间变化时模式能及时切换
-        setInterval(applyThemeBasedOnSunTimes, 60 * 60 * 1000); // 60分钟（1小时）更新一次
-
-        // 鼠标点击效果 JavaScript
-        document.body.addEventListener('click', (event) => {
-            const heart = document.createElement('span');
-            heart.textContent = '❤️';
-            heart.classList.add('click-effect');
-            heart.style.left = `${event.clientX}px`;
-            heart.style.top = `${event.clientY}px`;
-            document.body.appendChild(heart);
-
-            // 触发动画
-            setTimeout(() => {
-                heart.classList.add('fade-out');
-            }, 10); // 短暂延迟以确保 CSS 过渡生效
-
-            // 动画结束后移除元素
-            heart.addEventListener('transitionend', () => {
-                heart.remove();
+            
+            // 谷歌搜索功能实现
+            googleSearchBtn.addEventListener('click', () => performSearch('google'));
+        
+            // 百度搜索功能实现
+            baiduSearchBtn.addEventListener('click', () => performSearch('baidu'));
+        
+            // 允许在搜索输入框中按回车键进行谷歌搜索
+            searchInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') { // 如果按下的键是“Enter”
+                    performSearch('google'); // 模拟点击谷歌搜索按钮
+                }
             });
+        
+            // 禁用右键默认菜单并跳转到指定网页
+            document.addEventListener('contextmenu', (event) => {
+                event.preventDefault(); // 阻止默认的右键菜单
+                window.location.href = 'https://www.gov.cn/'; // 跳转到指定网址
+            });
+        
+            // 鼠标点击效果 JavaScript
+            // 将事件监听器绑定到整个文档，确保覆盖全范围
+            document.body.addEventListener('click', (event) => {
+                const heart = document.createElement('span');
+                heart.textContent = '❤️';
+                heart.classList.add('click-effect');
+                // 修复：使用 event.pageX 和 event.pageY 获取相对于文档的精确点击位置
+                heart.style.left = `${event.pageX}px`;
+                heart.style.top = `${event.pageY}px`;
+                document.body.appendChild(heart);
+        
+                // 触发动画
+                setTimeout(() => {
+                    heart.classList.add('fade-out');
+                }, 10); // 短暂延迟以确保 CSS 过渡生效
+        
+                // 动画结束后移除元素
+                heart.addEventListener('transitionend', () => {
+                    heart.remove();
+                });
+            });
+
+            // 侧边栏交互逻辑
+            const sidebarContainer = document.getElementById('sidebar-container');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+        
+            /**
+             * 切换侧边栏的显示/隐藏状态。
+             */
+            function toggleSidebar() {
+                sidebarContainer.classList.toggle('open');
+            }
+
+            // 添加非空检查，确保元素存在
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
         });
     </script>
 </body>
