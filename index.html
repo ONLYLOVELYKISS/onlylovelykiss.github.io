@@ -506,6 +506,24 @@
                 sidebarContainer.classList.toggle('open');
             }
 
+            // 新增: 专门用于收起侧边栏的函数
+            function closeSidebar() {
+                sidebarContainer.classList.remove('open');
+            }
+            
+            // 鼠标移出侧边栏时自动收起
+            if (sidebarContainer) {
+                sidebarContainer.addEventListener('mouseleave', closeSidebar);
+            }
+
+            // 点击页面其他区域时收起侧边栏
+            document.addEventListener('click', (event) => {
+                // 检查点击事件是否发生在侧边栏容器或其触发按钮之外
+                if (!sidebarContainer.contains(event.target) && !sidebarToggle.contains(event.target)) {
+                    closeSidebar();
+                }
+            });
+
             // 添加非空检查，确保元素存在
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', toggleSidebar);
