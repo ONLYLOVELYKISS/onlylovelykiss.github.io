@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人工资单统计</title>
+    <style>
+        /* ------------------- CSS 变量和全局样式 ------------------- */
+        :root {
+            --primary-color: #1890ff;
+            --secondary-color: #f0f2f5;
+            --text-color: #333;
+            --card-bg: #fff;
+            --border-color: #ddd;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --red-color: #f5222d;
+            --gray-color: #6c757d;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1300px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 0;
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        h2 {
+            margin-top: 0;
+            color: var(--text-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="file"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #40a9ff;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-group button {
+            background-color: var(--gray-color);
+            padding: 10px 15px;
+            min-width: 100px;
+        }
+        .btn-group button:hover {
+            background-color: #5a6268;
+        }
+        .chart-container {
+            height: 400px;
+            width: 100%;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .chart {
+            height: 100%;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        thead th {
+            background-color: #f7f7f7;
+            text-align: center;
+            white-space: nowrap;
+        }
+        #status-message {
+            margin-top: 15px;
+            font-style: italic;
+            color: #555;
+        }
+        .full-data-table td, .full-data-table th {
+            padding: 8px 12px;
+            white-space: nowrap;
+        }
+        .footer-card {
+            text-align: center;
+            padding: 15px;
+        }
+        .footer-card h2 {
+            display: none;
+        }
+        .footer-card button {
+            background-color: var(--red-color);
+        }
+
+        .chart-option {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .chart-option button {
+            min-width: 120px;
+        }
+        .chart-option .custom-range {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .chart-option .custom-range label {
+            width: auto;
+            margin-bottom: 0;
+        }
+        .chart-option .custom-range input {
+            width: 120px;
+            flex-grow: 1;
+        }
+        @media (max-width: 600px) {
+            .chart-option .custom-range {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .chart-option input {
+                width: 100%;
+            }
+        }
+        /* 新增的表格样式 */
+        .person-container {
+            margin-top: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .person-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .month-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .month-section h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+        .full-data-table {
+            overflow-x: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>个人工资统计分析</h1>
+
+        <div class="card">
+            <h2>上传工资单</h2>
+            <div class="form-group">
+                <label for="file-input">选择 Excel 文件:</label>
+                <input type="file" id="file-input" multiple accept=".xlsx, .xls">
+            </div>
+            <button id="upload-button">上传并添加</button>
+            <p id="status-message"></p>
+        </div>
+
+        <div class="card">
+            <h2>工资趋势与构成</h2>
+            
+            <div class="btn-group">
+                <button onclick="selectPeriod('monthly')">月度</button>
+                <button onclick="selectPeriod('yearly')">年度</button>
+                <button onclick="selectPeriod('all')">总览</button>
+                <button onclick="toggleCustomRange()">自定义</button>
+            </div>
+
+            <div id="custom-range" class="chart-option" style="display:none; margin-top:0;">
+                <div class="custom-range">
+                    <label>开始月份:</label>
+                    <input type="text" id="start-month" placeholder="如: 2024-01">
+                    <label>结束月份:</label>
+                    <input type="text" id="end-month" placeholder="如: 2024-06">
+                </div>
+            </div>
+
+            <div class="chart-option">
+                <button onclick="renderCharts('bar')">趋势图</button>
+                <button onclick="renderCharts('pie')">构成图</button>
+            </div>
+
+            <div class="chart-container">
+                <div id="salary-chart" class="chart"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>所有工资分项全览</h2>
+            <div id="full-data-display">
+                </div>
+        </div>
+        
+        <div class="card footer-card">
+            <button id="clear-data-button">清空所有数据</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+
+    <script>
+        // ------------------- JavaScript 逻辑 -------------------
+        
+        const fileInput = document.getElementById('file-input');
+        const uploadButton = document.getElementById('upload-button');
+        const clearDataButton = document.getElementById('clear-data-button');
+        const statusMessage = document.getElementById('status-message');
+        const customRangeDiv = document.getElementById('custom-range');
+        const startMonthInput = document.getElementById('start-month');
+        const endMonthInput = document.getElementById('end-month');
+        const fullDataDisplay = document.getElementById('full-data-display');
+        const salaryChart = echarts.init(document.getElementById('salary-chart'));
+        
+        let allSalaryData = [];
+        const localStorageKey = 'allSalaryData';
+        let currentPeriodType = 'monthly';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDataFromLocalStorage();
+            renderCharts('bar');
+        });
+
+        uploadButton.addEventListener('click', handleFileUpload);
+        clearDataButton.addEventListener('click', clearAllData);
+        
+        function selectPeriod(periodType) {
+            currentPeriodType = periodType;
+            customRangeDiv.style.display = 'none';
+            renderCharts('bar');
+        }
+
+        function toggleCustomRange() {
+            if (customRangeDiv.style.display === 'none') {
+                customRangeDiv.style.display = 'flex';
+                currentPeriodType = 'custom';
+            } else {
+                customRangeDiv.style.display = 'none';
+                currentPeriodType = 'monthly';
+            }
+        }
+
+        function loadDataFromLocalStorage() {
+            const storedData = localStorage.getItem(localStorageKey);
+            if (storedData) {
+                allSalaryData = JSON.parse(storedData);
+                renderFullDataTable(allSalaryData);
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('确定要清空所有数据吗？此操作不可撤销。')) {
+                localStorage.removeItem(localStorageKey);
+                allSalaryData = [];
+                renderFullDataTable(allSalaryData);
+                renderCharts('bar');
+                statusMessage.textContent = '所有数据已清除。';
+            }
+        }
+
+        function handleFileUpload() {
+            const files = fileInput.files;
+            if (files.length === 0) {
+                statusMessage.textContent = '请选择文件。';
+                return;
+            }
+
+            statusMessage.textContent = '正在处理文件...';
+            let filesProcessed = 0;
+
+            for (const file of files) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    let month = '';
+                    const dateMatch = sheetData.flat().find(cell => typeof cell === 'string' && /(\d{4}年\d{1,2}月)/.test(cell));
+                    if (dateMatch) {
+                        const dateString = dateMatch;
+                        const year = dateString.match(/\d{4}/)[0];
+                        const monthNum = dateString.match(/年(\d{1,2})月/)[1].padStart(2, '0');
+                        month = `${year}-${monthNum}`;
+                    } else {
+                        statusMessage.textContent = `在文件 ${file.name} 中未找到月份信息。`;
+                        return;
+                    }
+                    
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, range: 2, raw: true });
+                    
+                    if (jsonData.length > 0) {
+                        const header = jsonData[0];
+                        const row = jsonData[1];
+                        
+                        let item = {};
+                        header.forEach((colName, idx) => {
+                            if (colName) {
+                                const sanitizedColName = colName.trim().replace(/\s+/g, '');
+                                item[sanitizedColName] = row[idx] || 0;
+                            }
+                        });
+                        
+                        const grossPayItems = [
+                            '岗位工资', '预发绩效', '浮动绩效', '年功工资', '加班工资', '国内项目岗位补贴',
+                            '外勤补贴/艰苦津贴', '中夜班津贴', '融合项目保密津贴', '信访津贴', '导师津贴',
+                            '通讯补贴', '交通补贴', '执业资格补贴', '单项奖', '补发工资'
+                        ];
+
+                        const deductionItems = [
+                            '扣岗位工资', '扣预发绩效', '扣安全风险金', '扣工会会费', '扣养老保险金',
+                            '扣医疗保险金', '扣大病医保', '扣失业保险', '扣公积金', '扣企业年金', '扣个人所得税'
+                        ];
+                        
+                        item['月份'] = month;
+                        
+                        item['应发工资'] = grossPayItems.reduce((sum, name) => sum + (item[name] || 0), 0);
+                        item['应扣工资'] = deductionItems.reduce((sum, name) => sum + (item[name] || 0), 0);
+                        item['实发工资'] = item['应发工资'] - item['应扣工资'];
+                        
+                        allSalaryData.push(item);
+                    }
+                    
+                    filesProcessed++;
+                    if (filesProcessed === files.length) {
+                        localStorage.setItem(localStorageKey, JSON.stringify(allSalaryData));
+                        renderFullDataTable(allSalaryData);
+                        renderCharts('bar');
+                        statusMessage.textContent = '文件处理完毕，数据已添加。';
+                        fileInput.value = '';
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        }
+
+        // 渲染完整数据表格（按人员和月份分类）
+        function renderFullDataTable(data) {
+            fullDataDisplay.innerHTML = '';
+            if (data.length === 0) {
+                return;
+            }
+
+            const grossPayItems = [
+                '岗位工资', '预发绩效', '浮动绩效', '年功工资', '加班工资', '国内项目岗位补贴',
+                '外勤补贴/艰苦津贴', '中夜班津贴', '融合项目保密津贴', '信访津贴', '导师津贴',
+                '通讯补贴', '交通补贴', '执业资格补贴', '单项奖', '补发工资'
+            ];
+
+            const deductionItems = [
+                '扣岗位工资', '扣预发绩效', '扣安全风险金', '扣工会会费', '扣养老保险金',
+                '扣医疗保险金', '扣大病医保', '扣失业保险', '扣公积金', '扣企业年金', '扣个人所得税'
+            ];
+
+            const peopleData = data.reduce((acc, current) => {
+                const name = current['姓名'] || '未知人员';
+                if (!acc[name]) {
+                    acc[name] = {};
+                }
+                acc[name][current['月份']] = current;
+                return acc;
+            }, {});
+
+            const sortedNames = Object.keys(peopleData).sort();
+            sortedNames.forEach(name => {
+                const personContainer = document.createElement('div');
+                personContainer.className = 'person-container';
+                personContainer.innerHTML = `<div class="person-name">${name}</div>`;
+                
+                const sortedMonths = Object.keys(peopleData[name]).sort();
+                sortedMonths.forEach(month => {
+                    const item = peopleData[name][month];
+                    const monthSection = document.createElement('div');
+                    monthSection.className = 'month-section';
+                    monthSection.innerHTML = `<h3>${month}</h3>`;
+
+                    // 创建一个大表格来容纳所有分类
+                    const table = document.createElement('table');
+                    table.className = 'salary-table';
+                    
+                    // 动态过滤掉值为0的项，用于生成表头
+                    const dynamicGrossPayHeaders = grossPayItems.filter(h => (item[h] || 0) !== 0);
+                    const dynamicDeductionHeaders = deductionItems.filter(h => (item[h] || 0) !== 0);
+                    const combinedHeadersCount = Math.max(dynamicGrossPayHeaders.length, dynamicDeductionHeaders.length);
+
+                    // 创建应发工资行
+                    const grossPayRow = document.createElement('tr');
+                    grossPayRow.innerHTML = `
+                        <th rowspan="2" class="category-header">应发工资</th>
+                        ${dynamicGrossPayHeaders.map(h => `<th>${h}</th>`).join('')}
+                        ${combinedHeadersCount > dynamicGrossPayHeaders.length ? `<th colspan="${combinedHeadersCount - dynamicGrossPayHeaders.length}"></th>` : ''}
+                    `;
+                    const grossPayDataRow = document.createElement('tr');
+                    grossPayDataRow.innerHTML = `
+                        ${dynamicGrossPayHeaders.map(h => `<td>${(item[h] || 0).toFixed(2)}</td>`).join('')}
+                        ${combinedHeadersCount > dynamicGrossPayHeaders.length ? `<td colspan="${combinedHeadersCount - dynamicGrossPayHeaders.length}"></td>` : ''}
+                    `;
+
+                    // 创建应扣工资行
+                    const deductionRow = document.createElement('tr');
+                    deductionRow.innerHTML = `
+                        <th rowspan="2" class="category-header">应扣工资</th>
+                        ${dynamicDeductionHeaders.map(h => `<th>${h}</th>`).join('')}
+                        ${combinedHeadersCount > dynamicDeductionHeaders.length ? `<th colspan="${combinedHeadersCount - dynamicDeductionHeaders.length}"></th>` : ''}
+                    `;
+                    const deductionDataRow = document.createElement('tr');
+                    deductionDataRow.innerHTML = `
+                        ${dynamicDeductionHeaders.map(h => `<td>${(item[h] || 0).toFixed(2)}</td>`).join('')}
+                        ${combinedHeadersCount > dynamicDeductionHeaders.length ? `<td colspan="${combinedHeadersCount - dynamicDeductionHeaders.length}"></td>` : ''}
+                    `;
+
+                    // 创建实发工资行
+                    const netPayRow = document.createElement('tr');
+                    netPayRow.innerHTML = `
+                        <th class="category-header">实发工资</th>
+                        <td colspan="${Math.max(dynamicGrossPayHeaders.length, dynamicDeductionHeaders.length) || 1}">${(item['实发工资'] || 0).toFixed(2)}</td>
+                    `;
+                    
+                    // 将所有行添加到表格中
+                    table.appendChild(grossPayRow);
+                    table.appendChild(grossPayDataRow);
+                    table.appendChild(deductionRow);
+                    table.appendChild(deductionDataRow);
+                    table.appendChild(netPayRow);
+                    
+                    monthSection.appendChild(table);
+                    personContainer.appendChild(monthSection);
+                });
+                fullDataDisplay.appendChild(personContainer);
+            });
+        }
+
+        // 根据时间段类型过滤数据
+        function filterData(periodType) {
+            let data = [...allSalaryData];
+            
+            if (periodType === 'custom') {
+                const start = startMonthInput.value.trim();
+                const end = endMonthInput.value.trim();
+                if (start && end) {
+                    data = data.filter(item => item['月份'] >= start && item['月份'] <= end);
+                }
+            }
+            
+            const groupedData = {};
+            data.forEach(item => {
+                let key = item['月份'];
+                if (periodType === 'yearly') {
+                    key = item['月份'].substring(0, 4);
+                }
+                if (periodType === 'all') {
+                    key = '总计';
+                }
+
+                if (!groupedData[key]) {
+                    groupedData[key] = { grossPay: 0, netPay: 0, items: {} };
+                }
+                groupedData[key].grossPay += item['应发工资'];
+                groupedData[key].netPay += item['实发工资'];
+                
+                const allItems = [
+                    '岗位工资', '预发绩效', '浮动绩效', '年功工资', '加班工资', '国内项目岗位补贴',
+                    '外勤补贴/艰苦津贴', '中夜班津贴', '融合项目保密津贴', '信访津贴', '导师津贴',
+                    '通讯补贴', '交通补贴', '执业资格补贴', '单项奖', '补发工资',
+                    '扣岗位工资', '扣预发绩效', '扣安全风险金', '扣工会会费', '扣养老保险金',
+                    '扣医疗保险金', '扣大病医保', '扣失业保险', '扣公积金', '扣企业年金', '扣个人所得税'
+                ];
+                allItems.forEach(prop => {
+                    if (item[prop] && typeof item[prop] === 'number') {
+                        if (!groupedData[key].items[prop]) {
+                            groupedData[key].items[prop] = 0;
+                        }
+                        groupedData[key].items[prop] += item[prop];
+                    }
+                });
+            });
+            return groupedData;
+        }
+
+        function renderCharts(chartType) {
+            const chartData = filterData(currentPeriodType);
+            let option;
+
+            if (chartType === 'bar') {
+                const xAxisData = Object.keys(chartData).sort();
+                const grossPayData = xAxisData.map(key => chartData[key].grossPay.toFixed(2));
+                const netPayData = xAxisData.map(key => chartData[key].netPay.toFixed(2));
+                
+                option = {
+                    title: { text: currentPeriodType === 'monthly' ? '月度工资趋势' : (currentPeriodType === 'yearly' ? '年度工资趋势' : '自定义区间工资趋势'), left: 'center', top: '5%' },
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                    legend: { data: ['应发工资', '实发工资'], top: 'bottom' },
+                    xAxis: { type: 'category', data: xAxisData, axisLabel: { rotate: 45 } },
+                    yAxis: { type: 'value', name: '金额 (元)' },
+                    grid: { containLabel: true, left: '3%', right: '4%', bottom: '15%' },
+                    series: [
+                        { name: '应发工资', type: 'bar', data: grossPayData },
+                        { name: '实发工资', type: 'bar', data: netPayData }
+                    ],
+                    color: ['#40A9FF', '#1890FF']
+                };
+            } else if (chartType === 'pie') {
+                const pieData = [];
+                let pieTitle = '';
+                
+                let dataToAnalyze = chartData['总计'] ? chartData['总计'].items : {};
+                
+                if (currentPeriodType === 'all') {
+                    pieTitle = '总收入构成';
+                } else {
+                    const firstPeriod = Object.keys(chartData).sort()[0];
+                    if (firstPeriod) {
+                        pieTitle = `${firstPeriod} 工资构成`;
+                        dataToAnalyze = chartData[firstPeriod].items;
+                    } else {
+                        pieTitle = '无数据';
+                        dataToAnalyze = {};
+                    }
+                }
+                
+                for (const item in dataToAnalyze) {
+                    if (dataToAnalyze[item] > 0) {
+                        pieData.push({
+                            name: item,
+                            value: dataToAnalyze[item].toFixed(2)
+                        });
+                    }
+                }
+                
+                option = {
+                    title: { text: pieTitle, left: 'center', top: '5%' },
+                    tooltip: { trigger: 'item', formatter: "{a} <br/>{b}: {c} ({d}%)" },
+                    legend: { orient: 'vertical', left: 'left', data: pieData.map(item => item.name) },
+                    series: [
+                        { name: '工资构成', type: 'pie', radius: ['40%', '70%'], center: ['50%', '60%'], data: pieData,
+                          label: { show: true, formatter: '{b}: {d}%' },
+                          labelLine: { show: true },
+                          itemStyle: {
+                            borderRadius: 5,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                          }
+                        }
+                    ],
+                    color: ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#73C0DE', '#3BA272', '#FC8452', '#9A60B4', '#EA7CCC']
+                };
+            }
+            salaryChart.setOption(option, true);
+        }
+    </script>
+</body>
+</html>
