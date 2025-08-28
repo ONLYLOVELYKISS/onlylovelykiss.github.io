@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>余心留白🙄</title>
-    <!-- Tailwind CSS CDN，用于实用优先的样式设计 -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
     <style>
         /* 自定义字体 - 'YourCustomFont'，以提高可读性，并使用 Inter 作为备用字体 */
         @font-face {
@@ -47,7 +47,7 @@
         body:not(.dark) {
             background-color: transparent;
         }
-        
+
         /* 每个部分的背景颜色过渡 */
         .dark .bg-gray-800\/60 {
             transition: background-color 0.5s ease;
@@ -102,7 +102,7 @@
         .error-message.show {
             opacity: 1;
         }
-        
+
         /* --- 侧边栏优化和修复 --- */
         #sidebar-container {
             position: fixed;
@@ -114,11 +114,11 @@
             transform: translateX(-256px); /* 默认隐藏侧边栏，宽度为256px */
             transition: transform 0.3s ease-in-out;
         }
-        
+
         #sidebar-container.open {
             transform: translateX(0); /* 点击按钮时显示侧边栏 */
         }
-        
+
         #sidebar {
             width: 256px;
             height: 100%;
@@ -132,7 +132,7 @@
             border-bottom-right-radius: 1rem;
             flex-shrink: 0;
         }
-        
+
         #sidebar-toggle {
             position: fixed;
             left: 0;
@@ -189,17 +189,59 @@
                 border-radius: 1rem 0 0 1rem;
                 transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, left 0.3s ease-in-out;
             }
-            
+
             #sidebar-container.open + #sidebar-toggle {
                 left: 100%; /* When the sidebar opens, the button moves outside the viewport */
                 transform: translateX(-100%) translateY(-50%);
             }
         }
+
+        /* 优化后的 CDN 加速板块样式 */
+        .converter-box-section {
+            padding: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.15); /* 浅色半透明背景，与现有风格匹配 */
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .converter-box-section h2 {
+            border-bottom-color: #f6ad55; /* 橙色边框，与导航站风格兼容 */
+        }
+        .converter-box-section .input-group input,
+        .converter-box-section .result-display-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            width: 100%; /* 确保输入框和链接框宽度一致 */
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            text-align: center; /* 输入文本居中 */
+        }
+        .converter-box-section .input-group input:focus {
+            border-color: #3498db;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .converter-box-section .result-display-container {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 链接容器内容居中 */
+            text-align: center;
+        }
+        .converter-box-section .result-display-container .result-link-text {
+            word-wrap: break-word;
+            flex-grow: 1;
+            cursor: pointer; /* 鼠标变为可点击状态 */
+            text-decoration: underline; /* 增加下划线提示可点击 */
+        }
+        .converter-box-section .result-display-container.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center px-8 sm:px-16 lg:px-24 py-8 space-y-12 dark:bg-gray-900">
 
-    <!-- 左侧可拉列表区域 -->
     <div id="sidebar-container">
         <div id="sidebar" class="flex flex-col">
             <div class="flex-grow">
@@ -236,14 +278,13 @@
             </div>
         </div>
     </div>
-    
-    <!-- 侧边栏触发按钮 -->
+
     <div id="sidebar-toggle">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
     </div>
-    
+
     <header class="text-center">
         <h1 class="text-6xl font-extrabold mb-4 tracking-tight">
             <span>余心留白</span>
@@ -251,7 +292,6 @@
                 🙄
             </a>
         </h1>
-        <!-- 一言 (Hitokoto) 显示区域 -->
         <h5 class="mt-4 text-lg text-gray-700 dark:text-gray-200">
             <p id="hitokoto"></p>
             <script src="https://v1.hitokoto.cn/?encode=js&amp;select=%23hitokoto" defer=""></script>
@@ -287,7 +327,6 @@
                 百度搜索
             </button>
         </div>
-        <!-- 搜索输入为空时的提示信息 -->
         <p id="search-error-message" class="error-message">请输入搜索内容！</p>
     </section>
 
@@ -412,8 +451,25 @@
             </ul>
         </section>
     </main>
+    
+    <section class="flex flex-col items-center justify-center px-3 py-4 converter-box-section rounded-2xl shadow-md space-y-4 w-full max-w-6xl transform transition duration-300 hover:scale-105 hover:shadow-lg">
+        <h2 class="text-3xl font-semibold text-white border-b-2 pb-3 mb-3 dark:text-gray-100">
+            GitHub CDN 加速器
+        </h2>
+        <p class="text-lg text-gray-200 dark:text-gray-300 text-center">粘贴 GitHub 文件链接，即可自动生成高速 CDN 链接，点击即可复制。</p>
+        <div class="input-group w-full max-w-2xl">
+            <input
+                type="text"
+                id="github-url-input"
+                placeholder="例如: https://github.com/user/repo/blob/main/path/to/file.js"
+                class="flex-grow p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+            />
+        </div>
+        <div class="result-display-container hidden w-full max-w-2xl" id="result-link">
+            <span class="result-link-text text-white" id="cdn-link-text"></span>
+        </div>
+    </section>
 
-    <!-- 遵循极简风格的页脚 -->
     <footer class="mt-auto py-8 text-center text-gray-900 dark:text-gray-100">
         <p class="mb-4 text-center">
             <span>Kangの小小世界</span>
@@ -421,20 +477,18 @@
                 😉
             </a>
         </p>
-            <div class="flex justify-center space-x-6">
+        <div class="flex justify-center space-x-6">
             <a href="https://github.com/ONLYLOVELYKISS" target="_blank" rel="noopener noreferrer" class="text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="display:block;margin:auto;">
                     <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.11.82-.26.82-.577v-2.02c-3.33.72-4.04-1.61-4.04-1.61-.54-1.37-1.32-1.74-1.32-1.74-1.08-.74.08-.73.08-.73 1.2.08 1.833 1.23 1.833 1.23 1.066 1.82 2.8 1.29 3.49.98.11-.76.41-1.29.75-1.58-2.66-.3-5.46-1.33-5.46-5.92 0-1.31.46-2.38 1.22-3.22-.12-.3-.53-1.52.12-3.18 0 0 1.02-.32 3.35 1.23.96-.26 1.98-.39 3-.39 1.02 0 2.04.13 3 .39 2.33-1.55 3.35-1.23 3.35-1.23.65 1.66.24 2.88.12 3.18.76.84 1.22 1.9 1.22 3.22 0 4.6-2.8 5.62-5.47 5.92.42.36.81 1.09.81 2.2v3.25c0 .32.22.68.83.57C20.563 21.8 24 17.302 24 12c0-6.627-5.373-12-12-12z"/>
                 </svg>
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
-                <!-- X（Twitter）图标修正版 -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="display:block;margin:auto;">
                     <path d="M17.53 3H21L14.47 10.29L22 21H15.66L10.61 14.37L4.97 21H1.5L8.42 13.18L1 3H7.49L12.13 9.13L17.53 3ZM16.37 19H18.19L6.3 5H4.38L16.37 19Z"/>
                 </svg>
             </a>
             <a href="#" target="_blank" rel="noopener noreferrer" class="text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
-                <!-- Instagram 图标修正版 -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="display:block;margin:auto;">
                     <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zm4.25 3.25a5.25 5.25 0 1 1 0 10.5a5.25 5.25 0 0 1 0-10.5zm0 1.5a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5zm5.25.75a1 1 0 1 1-2 0a1 1 0 0 1 2 0z"/>
                 </svg>
@@ -449,7 +503,7 @@
             const googleSearchBtn = document.getElementById('google-search-btn');
             const baiduSearchBtn = document.getElementById('baidu-search-btn');
             const searchErrorMessage = document.getElementById('search-error-message');
-        
+
             /**
              * 显示搜索错误消息。
              */
@@ -460,7 +514,7 @@
                     searchErrorMessage.classList.remove('show');
                 }, 2000);
             }
-        
+
             /**
              * 执行搜索操作。
              * @param {string} searchEngine - 搜索引擎名称 ('google' 或 'baidu')。
@@ -481,26 +535,26 @@
                     showSearchError(); // 如果输入为空，显示错误消息
                 }
             }
-            
+
             // 谷歌搜索功能实现
             googleSearchBtn.addEventListener('click', () => performSearch('google'));
-        
+
             // 百度搜索功能实现
             baiduSearchBtn.addEventListener('click', () => performSearch('baidu'));
-        
+
             // 允许在搜索输入框中按回车键进行谷歌搜索
             searchInput.addEventListener('keypress', (event) => {
                 if (event.key === 'Enter') { // 如果按下的键是“Enter”
                     performSearch('google'); // 模拟点击谷歌搜索按钮
                 }
             });
-        
+
             // 禁用右键默认菜单并跳转到指定网页
             document.addEventListener('contextmenu', (event) => {
                 event.preventDefault(); // 阻止默认的右键菜单
                 window.location.href = 'https://www.gov.cn/'; // 跳转到指定网址
             });
-        
+
             // 鼠标点击效果 JavaScript
             // 将事件监听器绑定到整个文档，确保覆盖全范围
             document.body.addEventListener('click', (event) => {
@@ -511,12 +565,12 @@
                 heart.style.left = `${event.pageX}px`;
                 heart.style.top = `${event.pageY}px`;
                 document.body.appendChild(heart);
-        
+
                 // 触发动画
                 setTimeout(() => {
                     heart.classList.add('fade-out');
                 }, 10); // 短暂延迟以确保 CSS 过渡生效
-        
+
                 // 动画结束后移除元素
                 heart.addEventListener('transitionend', () => {
                     heart.remove();
@@ -526,7 +580,7 @@
             // 侧边栏交互逻辑
             const sidebarContainer = document.getElementById('sidebar-container');
             const sidebarToggle = document.getElementById('sidebar-toggle');
-        
+
             /**
              * 切换侧边栏的显示/隐藏状态。
              */
@@ -538,7 +592,7 @@
             function closeSidebar() {
                 sidebarContainer.classList.remove('open');
             }
-            
+
             // 鼠标移出侧边栏时自动收起
             if (sidebarContainer) {
                 sidebarContainer.addEventListener('mouseleave', closeSidebar);
@@ -556,15 +610,60 @@
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', toggleSidebar);
             }
+
+            // 新增的 CDN 加速功能 JavaScript
+            const githubInput = document.getElementById('github-url-input');
+            const resultDiv = document.getElementById('result-link');
+            const cdnLinkText = document.getElementById('cdn-link-text');
+
+            function convertLink() {
+                const inputUrl = githubInput.value.trim();
+                
+                if (!inputUrl) {
+                    resultDiv.classList.add('hidden');
+                    return;
+                }
+
+                try {
+                    const url = new URL(inputUrl);
+                    const pathParts = url.pathname.split('/');
+                    
+                    if (pathParts.length < 5 || pathParts[3] !== 'blob' || url.hostname !== 'github.com') {
+                        cdnLinkText.textContent = '链接格式不正确，请确保它是一个有效的 GitHub 文件链接。';
+                        resultDiv.classList.remove('hidden');
+                        return;
+                    }
+
+                    const user = pathParts[1];
+                    const repo = pathParts[2];
+                    const version = pathParts[4];
+                    const filePath = pathParts.slice(5).join('/');
+
+                    const jsDelivrUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@${version}/${filePath}`;
+
+                    cdnLinkText.textContent = jsDelivrUrl;
+                    resultDiv.classList.remove('hidden');
+                    
+                } catch (error) {
+                    cdnLinkText.textContent = '无效的 URL。请检查您的输入。';
+                    resultDiv.classList.remove('hidden');
+                }
+            }
+            
+            // 绑定事件，实现在输入时自动生成链接
+            githubInput.addEventListener('input', convertLink);
+            
+            // 新增：点击生成的链接即可复制
+            cdnLinkText.addEventListener('click', function(e) {
+                const textToCopy = e.target.textContent;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    alert('链接已成功复制到剪贴板！');
+                }).catch(err => {
+                    console.error('复制失败: ', err);
+                });
+            });
         });
     </script>
 </body>
 
 </html>
-
-
-
-
-
-
-
