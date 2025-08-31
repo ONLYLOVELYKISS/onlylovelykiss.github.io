@@ -94,15 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarContainer.classList.remove('open');
     }
 
-    // 鼠标移出侧边栏时自动收起
-    if (sidebarContainer) {
-        sidebarContainer.addEventListener('mouseleave', closeSidebar);
-    }
-
     // 点击页面其他区域时收起侧边栏
     document.addEventListener('click', (event) => {
         // 检查点击事件是否发生在侧边栏容器或其触发按钮之外
-        if (!sidebarContainer.contains(event.target) && !sidebarToggle.contains(event.target)) {
+        if (sidebarContainer && sidebarToggle && !sidebarContainer.contains(event.target) && !sidebarToggle.contains(event.target)) {
             closeSidebar();
         }
     });
@@ -119,59 +114,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 优化后的 convertLink 函数，可处理两种类型的 GitHub 链接
     function convertLink() {
-    const inputUrl = githubInput.value.trim();
-    if (!inputUrl) {
-        resultDiv.classList.add('hidden');
-        return;
-    }
+        const inputUrl = githubInput.value.trim();
+        if (!inputUrl) {
+            resultDiv.classList.add('hidden');
+            return;
+        }
 
-    try {
-        const url = new URL(inputUrl);
-        let cdnUrl;
+        try {
+            const url = new URL(inputUrl);
+            let cdnUrl;
 
-        // 处理 raw.githubusercontent.com 链接
-        if (url.hostname === 'raw.githubusercontent.com') {
-            const pathParts = url.pathname.split('/');
-            const user = pathParts[1];
-            const repo = pathParts[2];
-            
-            // 检查路径是否包含 refs/heads/ 或 refs/tags/
-            if (pathParts[3] === 'refs' && (pathParts[4] === 'heads' || pathParts[4] === 'tags')) {
-                const ref = `${pathParts[3]}/${pathParts[4]}/${pathParts[5]}`;
-                const filePath = pathParts.slice(6).join('/');
-                cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}/${filePath}`;
+            // 处理 raw.githubusercontent.com 链接
+            if (url.hostname === 'raw.githubusercontent.com') {
+                const pathParts = url.pathname.split('/');
+                const user = pathParts[1];
+                const repo = pathParts[2];
+                
+                // 检查路径是否包含 refs/heads/ 或 refs/tags/
+                if (pathParts[3] === 'refs' && (pathParts[4] === 'heads' || pathParts[4] === 'tags')) {
+                    const ref = `${pathParts[3]}/${pathParts[4]}/${pathParts[5]}`;
+                    const filePath = pathParts.slice(6).join('/');
+                    cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@${ref}/${filePath}`;
+                } else {
+                    // 如果没有 refs/heads/ 或 refs/tags/，则使用 main
+                    const filePath = pathParts.slice(3).join('/');
+                    cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@main/${filePath}`;
+                }
+
+            // 处理 github.com 链接
+            } else if (url.hostname === 'github.com') {
+                const pathParts = url.pathname.split('/');
+                if (pathParts.length < 5 || pathParts[3] !== 'blob') {
+                    cdnLinkText.textContent = '链接格式不正确，请确保它是一个有效的 GitHub 文件链接。';
+                    resultDiv.classList.remove('hidden');
+                    return;
+                }
+
+                const user = pathParts[1];
+                const repo = pathParts[2];
+                const version = pathParts[4];
+                const filePath = pathParts.slice(5).join('/');
+
+                cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@${version}/${filePath}`;
             } else {
-                // 如果没有 refs/heads/ 或 refs/tags/，则使用 main
-                const filePath = pathParts.slice(3).join('/');
-                cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@main/${filePath}`;
-            }
-
-        // 处理 github.com 链接
-        } else if (url.hostname === 'github.com') {
-            const pathParts = url.pathname.split('/');
-            if (pathParts.length < 5 || pathParts[3] !== 'blob') {
-                cdnLinkText.textContent = '链接格式不正确，请确保它是一个有效的 GitHub 文件链接。';
+                cdnLinkText.textContent = '无效的 URL。请输入一个有效的 GitHub 或 raw.githubusercontent.com 链接。';
                 resultDiv.classList.remove('hidden');
                 return;
             }
 
-            const user = pathParts[1];
-            const repo = pathParts[2];
-            const version = pathParts[4];
-            const filePath = pathParts.slice(5).join('/');
-
-            cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@${version}/${filePath}`;
-        } else {
-            cdnLinkText.textContent = '无效的 URL。请输入一个有效的 GitHub 或 raw.githubusercontent.com 链接。';
+            cdnLinkText.textContent = cdnUrl;
             resultDiv.classList.remove('hidden');
-            return;
+
+        } catch (error) {
+            cdnLinkText.textContent = '无效的 URL。请检查您的输入。';
+            resultDiv.classList.remove('hidden');
         }
-
-        cdnLinkText.textContent = cdnUrl;
-        resultDiv.classList.remove('hidden');
-
-    } catch (error) {
-        cdnLinkText.textContent = '无效的 URL。请检查您的输入。';
-        resultDiv.classList.remove('hidden');
     }
-}
+    
+    // 绑定事件，实现在输入时自动生成链接
+    githubInput.addEventListener('input', convertLink);
+    
+    // 新增：点击生成的链接即可复制
+    cdnLinkText.addEventListener('click', function(e) {
+        const textToCopy = e.target.textContent;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            alert('链接已成功复制到剪贴板！');
+        }).catch(err => {
+            console.error('复制失败: ', err);
+        });
+    });
+});
