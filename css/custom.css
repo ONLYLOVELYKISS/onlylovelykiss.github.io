@@ -1,30 +1,31 @@
-/* 自定义字体 - 使用更现代的字体栈，同时保留你的自定义字体 */
+/* 自定义字体 - 'YourCustomFont'，以提高可读性，并使用系统字体作为备用字体 */
 @font-face {
-    font-family: 'YourCustomFont';
+    font-family: 'YourCustomFont'; /* 定义你的自定义字体名称 */
+    /* URL 指向本地字体文件。使用 'font-display: swap' 以提高性能。 */
     src: url('../fonts/ark-pixel-12px-zh_cn.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+    font-weight: normal; /* 字体粗细 */
+    font-style: normal; /* 字体样式 */
+    font-display: swap; /* 字体加载策略，在字体加载期间使用备用字体 */
 }
 
-/* 核心布局与 Apple 风格背景 */
+/* 确保 HTML 元素占据整个视口高度，并设置背景图片 */
 html {
     height: 100%;
     margin: 0;
     padding: 0;
     background-image: url('../img/Back.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-attachment: fixed;
+    background-size: cover; /* 确保背景图片覆盖整个元素 */
+    background-position: center center; /* 将背景图片居中 */
+    background-attachment: fixed; /* 固定背景，不随页面滚动 */
 }
 
 body {
     /* 优先使用系统原生字体以获得最佳显示效果，最后回退到你的自定义字体 */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", 'YourCustomFont';
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", 'YourCustomFont';
     min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
+    margin: 0; /* 移除默认的 body 边距 */
+    padding: 0; /* 移除默认的 body 内边距 */
+    overflow-x: hidden; /* 防止因为侧边栏出现横向滚动条 */
     transition: background-color 0.5s ease; /* 保持背景颜色过渡 */
 }
 
@@ -34,6 +35,7 @@ body.dark {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+/* 修复白天模式下的背景颜色，确保背景图可见 */
 body:not(.dark) {
     background-color: transparent;
 }
@@ -65,7 +67,7 @@ h1, h2, p, a, footer {
 /* 鼠标点击效果优化 */
 .click-effect {
     position: absolute;
-    pointer-events: none;
+    pointer-events: none; /* 确保它不干扰鼠标事件 */
     font-size: 1.5em;
     opacity: 1;
     transform: translate(-50%, -200%);
@@ -77,7 +79,7 @@ h1, h2, p, a, footer {
     transform: translate(-50%, -150px) scale(0.5);
 }
 
-/* 错误消息样式 */
+/* 搜索输入框为空时的提示样式 */
 .error-message {
     color: #fca5a5; /* 使用柔和的红色，与整体风格更搭 */
     font-size: 0.875rem;
@@ -90,7 +92,7 @@ h1, h2, p, a, footer {
     opacity: 1;
 }
 
-/* 侧边栏优化 */
+/* --- 侧边栏优化和修复 --- */
 #sidebar-container {
     position: fixed;
     top: 0;
@@ -98,18 +100,18 @@ h1, h2, p, a, footer {
     height: 100%;
     z-index: 50;
     display: flex;
-    transform: translateX(-256px);
+    transform: translateX(-256px); /* 默认隐藏侧边栏，宽度为256px */
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 平滑过渡 */
 }
 #sidebar-container.open {
-    transform: translateX(0);
+    transform: translateX(0); /* 点击按钮时显示侧边栏 */
 }
 
 #sidebar-toggle {
     position: fixed;
     left: 0;
     top: 50%;
-    transform: translateX(-70%) translateY(-50%);
+    transform: translateX(-70%) translateY(-50%); /* 初始时部分隐藏 */
     width: 40px;
     height: 64px;
     background-color: rgba(0, 0, 0, 0.5);
@@ -121,10 +123,10 @@ h1, h2, p, a, footer {
     cursor: pointer;
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.3s ease-in-out;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-    z-index: 51;
+    z-index: 51; /* 确保按钮在侧边栏上方 */
 }
 #sidebar-toggle:hover {
-    transform: translateX(0) translateY(-50%);
+    transform: translateX(0) translateY(-50%); /* 鼠标悬停时完全浮现 */
     background-color: rgba(0, 0, 0, 0.7);
 }
 
@@ -135,7 +137,7 @@ h1, h2, p, a, footer {
     transform: rotate(180deg);
 }
 
-/* 移动端优化保持不变，以确保响应式布局 */
+/* 移动端优化 */
 @media (max-width: 767px) {
     #sidebar-container {
         width: 100%;
@@ -157,12 +159,12 @@ h1, h2, p, a, footer {
         transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, left 0.3s ease-in-out;
     }
     #sidebar-container.open + #sidebar-toggle {
-        left: 100%;
+        left: 100%; /* When the sidebar opens, the button moves outside the viewport */
         transform: translateX(-100%) translateY(-50%);
     }
 }
 
-/* CDN 加速板块样式优化 */
+/* 优化后的 CDN 加速板块样式 */
 .converter-box-section h2 {
     border-bottom-color: #fca5a5; /* 更柔和的橙红色，与整体风格兼容 */
 }
