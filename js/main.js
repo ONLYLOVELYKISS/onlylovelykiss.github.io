@@ -117,9 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultDiv = document.getElementById('result-link');
     const cdnLinkText = document.getElementById('cdn-link-text');
 
+    // 优化后的 convertLink 函数，可处理两种类型的 GitHub 链接
     function convertLink() {
         const inputUrl = githubInput.value.trim();
-        
         if (!inputUrl) {
             resultDiv.classList.add('hidden');
             return;
@@ -127,24 +127,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const url = new URL(inputUrl);
-            const pathParts = url.pathname.split('/');
-            
-            if (pathParts.length < 5 || pathParts[3] !== 'blob' || url.hostname !== 'github.com') {
-                cdnLinkText.textContent = '链接格式不正确，请确保它是一个有效的 GitHub 文件链接。';
+            let cdnUrl;
+
+            // 处理 raw.githubusercontent.com 链接
+            if (url.hostname === 'raw.githubusercontent.com') {
+                const pathParts = url.pathname.split('/');
+                const user = pathParts[1];
+                const repo = pathParts[2];
+                const filePath = pathParts.slice(3).join('/');
+                
+                // raw.githubusercontent.com 链接通常指向 main 或 master 分支的最新文件
+                cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@main/${filePath}`;
+
+            // 处理 github.com 链接
+            } else if (url.hostname === 'github.com') {
+                const pathParts = url.pathname.split('/');
+                if (pathParts.length < 5 || pathParts[3] !== 'blob') {
+                    cdnLinkText.textContent = '链接格式不正确，请确保它是一个有效的 GitHub 文件链接。';
+                    resultDiv.classList.remove('hidden');
+                    return;
+                }
+
+                const user = pathParts[1];
+                const repo = pathParts[2];
+                const version = pathParts[4];
+                const filePath = pathParts.slice(5).join('/');
+
+                cdnUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@${version}/${filePath}`;
+            } else {
+                cdnLinkText.textContent = '无效的 URL。请输入一个有效的 GitHub 或 raw.githubusercontent.com 链接。';
                 resultDiv.classList.remove('hidden');
                 return;
             }
 
-            const user = pathParts[1];
-            const repo = pathParts[2];
-            const version = pathParts[4];
-            const filePath = pathParts.slice(5).join('/');
-
-            const jsDelivrUrl = `https://cdn.jsdelivr.net/gh/${user}/${repo}@${version}/${filePath}`;
-
-            cdnLinkText.textContent = jsDelivrUrl;
+            cdnLinkText.textContent = cdnUrl;
             resultDiv.classList.remove('hidden');
-            
+
         } catch (error) {
             cdnLinkText.textContent = '无效的 URL。请检查您的输入。';
             resultDiv.classList.remove('hidden');
