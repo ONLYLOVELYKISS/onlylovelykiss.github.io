@@ -10,8 +10,8 @@
 </head>
 <body class="min-h-screen flex flex-col items-center px-8 sm:px-16 lg:px-24 py-8 space-y-12 dark:bg-gray-900">
 
-    <div id="sidebar-container" class="w-72">
-        <div id="sidebar" class="flex flex-col h-full bg-gray-800/60 dark:bg-gray-900/60 backdrop-blur-lg rounded-2xl shadow-xl transition-all duration-300 p-6">
+    <div id="sidebar-container" class="md:block hidden">
+        <div id="sidebar" class="w-72">
             <div class="flex-grow">
                 <h3 class="text-3xl font-bold mb-6 border-b-2 border-red-500 pb-4 text-white">导航</h3>
                 <ul class="space-y-4">
@@ -47,9 +47,9 @@
         </div>
     </div>
 
-    <div id="sidebar-toggle">
+    <div id="sidebar-toggle" class="md:hidden fixed left-4 top-4 w-10 h-10 rounded-full bg-gray-800/60 flex items-center justify-center text-white cursor-pointer z-50">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
     </div>
 
