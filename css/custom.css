@@ -96,8 +96,9 @@ h1, h2, p, a, footer {
     left: 0;
     height: 100%;
     z-index: 50;
+    display: flex;
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transform: translateX(-100%);
+    transform: translateX(-288px); /* 隐藏侧边栏，宽度为 288px */
 }
 #sidebar-container.open {
     transform: translateX(0);
@@ -105,12 +106,59 @@ h1, h2, p, a, footer {
 
 #sidebar {
     width: 288px;
-    border-radius: 0 12px 12px 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    background-color: rgba(255, 255, 255, 0.15);
     padding: 1.5rem;
+}
+
+#sidebar-toggle {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateX(0) translateY(-50%);
+    width: 40px;
+    height: 64px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.3s ease-in-out;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 51;
+}
+
+#sidebar-toggle.open {
+    transform: translateX(288px) translateY(-50%);
+}
+#sidebar-toggle.open svg {
+    transform: rotate(180deg);
+}
+
+/* 移动端优化 */
+@media (max-width: 767px) {
+    #sidebar-container {
+        width: 100%;
+        max-width: 100%;
+        transform: translateX(-100%);
+    }
+    #sidebar-container.open {
+        transform: translateX(0);
+    }
+    #sidebar {
+        width: 100%;
+        border-radius: 0;
+        padding: 1rem;
+    }
+    #sidebar-toggle {
+        left: calc(100% - 40px);
+        transform: translateX(0) translateY(-50%);
+        border-radius: 1rem 0 0 1rem;
+    }
+    #sidebar-toggle.open {
+        left: calc(100% - 40px);
+        transform: translateX(-100%) translateY(-50%);
+    }
 }
 
 /* CDN 加速板块样式优化 */
