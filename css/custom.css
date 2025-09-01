@@ -89,6 +89,70 @@ h1, h2, p, a, footer {
     opacity: 1;
 }
 
+/* --- 侧边栏重构后的样式 --- */
+#sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 50;
+    display: flex;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translateX(-288px); /* 隐藏侧边栏，宽度为 288px (w-72) */
+}
+#sidebar-container.open {
+    transform: translateX(0); /* JavaScript 添加 open 类时，侧边栏显示 */
+}
+
+#sidebar-toggle {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateX(0) translateY(-50%);
+    width: 40px;
+    height: 64px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.3s ease-in-out;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 51;
+}
+
+#sidebar-container.open #sidebar-toggle {
+    transform: translateX(288px) translateY(-50%) rotate(180deg); /* 侧边栏打开时，按钮随之移动并旋转 */
+}
+
+/* 移动端优化 */
+@media (max-width: 767px) {
+    #sidebar-container {
+        width: 100%;
+        max-width: 100%;
+        transform: translateX(-100%);
+    }
+    #sidebar-container.open {
+        transform: translateX(0);
+    }
+    #sidebar {
+        width: 100%;
+        border-radius: 0;
+        padding: 1rem;
+    }
+    #sidebar-toggle {
+        left: calc(100% - 40px);
+        transform: translateX(0) translateY(-50%);
+        border-radius: 1rem 0 0 1rem;
+    }
+    #sidebar-container.open + #sidebar-toggle {
+        left: 100%;
+        transform: translateX(-100%) translateY(-50%);
+    }
+}
+
 /* CDN 加速板块样式优化 */
 .converter-box-section h2 {
     border-bottom-color: #fca5a5;
