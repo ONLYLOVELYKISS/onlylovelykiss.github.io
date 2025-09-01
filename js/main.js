@@ -78,33 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 侧边栏交互逻辑（仅在移动端生效）
+    // 侧边栏交互逻辑
     const sidebarContainer = document.getElementById('sidebar-container');
     const sidebarToggle = document.getElementById('sidebar-toggle');
 
-    /**
-     * 切换侧边栏的显示/隐藏状态。
-     */
     function toggleSidebar() {
         sidebarContainer.classList.toggle('open');
     }
 
-    // 新增: 专门用于收起侧边栏的函数
-    function closeSidebar() {
-        sidebarContainer.classList.remove('open');
-    }
-
-    // 点击页面其他区域时收起侧边栏
-    document.addEventListener('click', (event) => {
-        if (sidebarContainer && sidebarToggle && !sidebarContainer.contains(event.target) && !sidebarToggle.contains(event.target)) {
-            closeSidebar();
-        }
-    });
-
-    // 添加非空检查，确保元素存在
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', toggleSidebar);
     }
+
+    // 点击页面其他区域关闭侧边栏
+    document.addEventListener('click', (event) => {
+        if (!sidebarContainer.contains(event.target) && !sidebarToggle.contains(event.target)) {
+            sidebarContainer.classList.remove('open');
+        }
+    });
 
     // 新增的 CDN 加速功能 JavaScript
     const githubInput = document.getElementById('github-url-input');
@@ -183,3 +174,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
