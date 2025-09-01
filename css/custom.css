@@ -96,35 +96,21 @@ h1, h2, p, a, footer {
     left: 0;
     height: 100%;
     z-index: 50;
-    display: flex;
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translateX(-100%);
 }
+#sidebar-container.open {
+    transform: translateX(0);
+}
+
 #sidebar {
-    width: 288px; /* 固定的宽度 */
+    width: 288px;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.15);
     padding: 1.5rem;
-}
-
-/* 在桌面端，侧边栏始终可见 */
-@media (min-width: 768px) {
-    #sidebar-container {
-        transform: translateX(0);
-    }
-}
-
-/* 移动端优化 */
-@media (max-width: 767px) {
-    #sidebar-container {
-        width: 100%;
-        transform: translateX(-100%); /* 默认隐藏 */
-    }
-    #sidebar-container.open {
-        transform: translateX(0); /* 激活时显示 */
-    }
-    #sidebar {
-        width: 100%;
-        border-radius: 0;
-        padding: 1rem;
-    }
 }
 
 /* CDN 加速板块样式优化 */
