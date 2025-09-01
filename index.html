@@ -10,8 +10,8 @@
 </head>
 <body class="min-h-screen flex flex-col items-center px-8 sm:px-16 lg:px-24 py-8 space-y-12 dark:bg-gray-900">
 
-    <div id="sidebar-container" class="fixed top-0 left-0 h-full w-72 z-50 group">
-        <div id="sidebar" class="flex flex-col h-full bg-gray-800/60 dark:bg-gray-900/60 backdrop-blur-lg rounded-2xl shadow-xl transition-all duration-300 transform -translate-x-full group-hover:translate-x-0 p-6">
+    <div id="sidebar-container" class="w-72">
+        <div id="sidebar" class="flex flex-col h-full bg-gray-800/60 dark:bg-gray-900/60 backdrop-blur-lg rounded-2xl shadow-xl transition-all duration-300 p-6">
             <div class="flex-grow">
                 <h3 class="text-3xl font-bold mb-6 border-b-2 border-red-500 pb-4 text-white">导航</h3>
                 <ul class="space-y-4">
@@ -45,12 +45,12 @@
                 </ul>
             </div>
         </div>
-        
-        <div id="sidebar-toggle" class="absolute left-full top-1/2 -translate-y-1/2 w-8 h-12 bg-gray-800/60 dark:bg-gray-900/60 rounded-r-2xl flex items-center justify-center cursor-pointer transition-all duration-300 transform -translate-x-1/2 group-hover:-translate-x-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white transform transition-transform duration-300 -rotate-180 group-hover:rotate-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-        </div>
+    </div>
+
+    <div id="sidebar-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
     </div>
 
     <header class="text-center">
