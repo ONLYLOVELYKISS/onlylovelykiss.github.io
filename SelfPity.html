@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>情侣间的相互温暖话语</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#e9446a',
+            lovePink: '#ff8fa3',
+            loveBlue: '#8ea8de',
+            lovePurple: '#c084fc',
+            loveYellow: '#fde68a',
+            loveGreen: '#a7f3d0',
+            loveCoral: '#fecdd3',
+            loveLavender: '#e0e7ff',
+            loveMint: '#d1fae5',
+            lovePeach: '#fee2e2',
+            loveSage: '#dbeafe',
+          },
+          fontFamily: {
+            romantic: ['Segoe UI', 'Roboto', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      /* 液态玻璃效果核心样式 */
+      .liquid-glass {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        transition: all 0.5s ease;
+      }
+      
+      /* 卡片悬停效果 */
+      .card-hover {
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      
+      .card-hover:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+      }
+      
+      /* 背景渐变动画 */
+      .bg-animate {
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+      }
+      
+      @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      /* 卡片弹出动画 */
+      @keyframes popIn {
+        0% { 
+          opacity: 0;
+          transform: scale(0.8) translateY(20px);
+        }
+        100% { 
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      
+      .pop-in {
+        animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+      
+      /* 卡片色彩过渡动画 */
+      .color-transition {
+        background-size: 200% 200%;
+        animation: colorShift 10s ease infinite;
+      }
+      
+      @keyframes colorShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 bg-animate font-romantic overflow-x-hidden">
+  
+  <!-- 卡片容器 -->
+  <main class="relative px-4 pb-24 pt-4 md:pt-8">
+    <!-- 卡片会通过JS动态添加到这里 -->
+  </main>
+  
+  <!-- 控制按钮 - 响应式设计 -->
+  <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex flex-wrap justify-center gap-3 px-4 z-50">
+    <button id="addCard" class="liquid-glass px-5 py-3 rounded-full text-white bg-primary hover:bg-primary/90 transition-all flex items-center gap-2 min-w-[140px] justify-center">
+      <i class="fa fa-heart"></i> 再添一句
+    </button>
+    <button id="clearCards" class="liquid-glass px-5 py-3 rounded-full text-gray-700 hover:bg-white/70 transition-all flex items-center gap-2 min-w-[140px] justify-center">
+      <i class="fa fa-trash"></i> 清空
+    </button>
+  </div>
+
+  <script>
+    // 情侣间温暖话语数据集
+    const loveMessages = [
+      "有你在身边，连空气都是甜的。",
+      "不管发生什么，我都会紧紧牵着你的手。",
+      "你的笑容，是我每天醒来的动力。",
+      "和你在一起的每一刻，都值得被珍藏。",
+      "谢谢你包容我的一切，包括我的小脾气。",
+      "想到未来有你，就对生活充满了期待。",
+      "即使沉默不语，只要你在身边就很安心。",
+      "你是我疲惫生活里的英雄梦想。",
+      "遇见你之后，我才明白什么是真正的幸福。",
+      "无论顺境逆境，我都会是你最坚实的后盾。",
+      "每天睡前想到的是你，醒来第一眼想看到的也是你。",
+      "你的拥抱，是治愈我所有不安的良药。",
+      "和你在一起，平凡的日子也变得闪闪发光。",
+      "我爱你，不是因为你是谁，而是因为和你在一起时我是谁。",
+      "谢谢你出现在我的生命里，像一道光照亮了我。",
+      "就算我们老得走不动了，我依然会像现在这样爱着你。",
+      "你理解我的奇奇怪怪，也陪我一起可可爱爱。",
+      "有你在，我什么都不怕。",
+      "你是我这辈子最正确的决定。",
+      "就算世界再大，我的眼里也只有你。"
+    ];
+    
+    // 丰富的柔和双色渐变组合
+    const cardColors = [
+      // 粉色系渐变
+      'from-lovePink/15 to-loveCoral/20',
+      'from-loveCoral/15 to-pink-100/20',
+      'from-pink-100/15 to-lovePeach/20',
+      
+      // 蓝色系渐变
+      'from-loveBlue/15 to-blue-100/20',
+      'from-blue-100/15 to-loveSage/20',
+      'from-loveSage/15 to-cyan-100/20',
+      
+      // 紫色系渐变
+      'from-lovePurple/15 to-loveLavender/20',
+      'from-loveLavender/15 to-purple-100/20',
+      'from-purple-100/15 to-indigo-100/20',
+      
+      // 黄色系渐变
+      'from-loveYellow/15 to-yellow-100/20',
+      'from-yellow-100/15 to-amber-100/20',
+      'from-amber-100/15 to-orange-100/20',
+      
+      // 绿色系渐变
+      'from-loveGreen/15 to-loveMint/20',
+      'from-loveMint/15 to-green-100/20',
+      'from-green-100/15 to-teal-100/20',
+      
+      // 混合色系渐变
+      'from-lovePink/15 to-lovePurple/15',
+      'from-loveBlue/15 to-lovePurple/15',
+      'from-loveGreen/15 to-loveBlue/15',
+      'from-loveYellow/15 to-lovePink/15',
+      'from-lovePeach/15 to-loveLavender/15'
+    ];
+    
+    // 图标集合
+    const icons = [
+      'fa-heart', 'fa-heartbeat', 'fa-star', 'fa-diamond', 
+      'fa-moon-o', 'fa-sun-o', 'fa-rose', 'fa-gift',
+      'fa-kiss-wink-heart', 'fa-hands-holding-heart',
+      'fa-heart-pulse', 'fa-heart-circle-plus', 'fa-heart-crack'
+    ];
+    
+    // 获取主容器
+    const mainContainer = document.querySelector('main');
+    const addCardBtn = document.getElementById('addCard');
+    const clearCardsBtn = document.getElementById('clearCards');
+    
+    // 生成随机数的函数
+    function getRandomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    // 获取屏幕宽度，用于响应式卡片定位
+    function getScreenWidth() {
+      return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    }
+    
+    // 获取屏幕高度，用于响应式卡片定位
+    function getScreenHeight() {
+      return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    }
+    
+    // 获取随机消息
+    function getRandomMessage() {
+      const randomIndex = getRandomNumber(0, loveMessages.length - 1);
+      return loveMessages[randomIndex];
+    }
+    
+    // 创建卡片元素 - 响应式设计
+    function createCard() {
+      const card = document.createElement('div');
+      const isMobile = getScreenWidth() < 768;
+      
+      // 随机属性
+      const randomColor = cardColors[getRandomNumber(0, cardColors.length - 1)];
+      const randomIcon = icons[getRandomNumber(0, icons.length - 1)];
+      const randomRotation = getRandomNumber(-3, 3); // 移动设备上旋转角度减小
+      const randomDelay = Math.random() * 0.5;
+      const hueRotate = getRandomNumber(0, 360);
+      
+      // 卡片尺寸响应式调整
+      const cardPadding = isMobile ? 'p-4' : 'p-6';
+      const cardMaxWidth = isMobile ? 'max-w-[85vw]' : 'max-w-md';
+      const textSize = isMobile ? 'text-base' : 'text-lg';
+      
+      // 设置卡片样式
+      card.className = `liquid-glass pop-in rounded-2xl ${cardPadding} ${cardMaxWidth} mx-auto mb-6 relative card-hover color-transition`;
+      card.style.transform = `rotate(${randomRotation}deg)`;
+      card.style.animationDelay = `${randomDelay}s`;
+      card.style.backgroundImage = `linear-gradient(135deg, ${randomColor})`;
+      card.style.filter = `hue-rotate(${hueRotate}deg)`;
+      
+      // 设置卡片内容
+      card.innerHTML = `
+        <div class="absolute -top-3 -right-3 text-primary/80 text-2xl transition-colors duration-700">
+          <i class="fa ${randomIcon}"></i>
+        </div>
+        <p class="text-gray-700 ${textSize} leading-relaxed italic transition-colors duration-700">${getRandomMessage()}</p>
+      `;
+      
+      return card;
+    }
+    
+    // 添加卡片到页面 - 响应式定位
+    function addCard() {
+      const card = createCard();
+      const screenWidth = getScreenWidth();
+      const screenHeight = getScreenHeight();
+      const isMobile = screenWidth < 768;
+      
+      // 卡片宽度（用于定位计算）
+      const cardWidth = isMobile ? screenWidth * 0.85 : 300;
+      const cardHeight = isMobile ? 120 : 150;
+      
+      // 随机位置进入 - 适配屏幕尺寸
+      const startPosX = getRandomNumber(-50, screenWidth + 50);
+      const startPosY = getRandomNumber(-50, screenHeight + 50);
+      
+      card.style.position = 'absolute';
+      card.style.left = `${startPosX}px`;
+      card.style.top = `${startPosY}px`;
+      card.style.opacity = '0';
+      
+      mainContainer.appendChild(card);
+      
+      // 计算最终位置 - 确保在屏幕内
+      const finalPosX = getRandomNumber(10, screenWidth - cardWidth - 10);
+      const finalPosY = getRandomNumber(
+        isMobile ? 40 : 50, 
+        screenHeight - cardHeight - (isMobile ? 120 : 100) // 底部留出更多空间给按钮
+      );
+      
+      // 触发动画
+      setTimeout(() => {
+        card.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        card.style.left = `${finalPosX}px`;
+        card.style.top = `${finalPosY}px`;
+        card.style.opacity = '1';
+      }, 50);
+    }
+    
+    // 初始添加卡片 - 移动设备适当减少
+    function initCards() {
+      const isMobile = getScreenWidth() < 768;
+      const initialCount = isMobile ? getRandomNumber(5, 8) : getRandomNumber(8, 12);
+      
+      for (let i = 0; i < initialCount; i++) {
+        setTimeout(addCard, i * 150);
+      }
+    }
+    
+    // 清空所有卡片
+    function clearCards() {
+      const cards = document.querySelectorAll('.liquid-glass.rounded-2xl');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.transition = 'all 0.5s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.8) rotate(0deg)';
+          setTimeout(() => card.remove(), 500);
+        }, index * 100);
+      });
+    }
+    
+    // 窗口大小变化时重新定位卡片
+    function handleResize() {
+      const cards = document.querySelectorAll('.liquid-glass.rounded-2xl');
+      const screenWidth = getScreenWidth();
+      const screenHeight = getScreenHeight();
+      const isMobile = screenWidth < 768;
+      const cardWidth = isMobile ? screenWidth * 0.85 : 300;
+      const cardHeight = isMobile ? 120 : 150;
+      
+      cards.forEach(card => {
+        const finalPosX = getRandomNumber(10, screenWidth - cardWidth - 10);
+        const finalPosY = getRandomNumber(
+          isMobile ? 40 : 50, 
+          screenHeight - cardHeight - (isMobile ? 120 : 100)
+        );
+        
+        card.style.left = `${finalPosX}px`;
+        card.style.top = `${finalPosY}px`;
+      });
+    }
+    
+    // 事件监听
+    addCardBtn.addEventListener('click', addCard);
+    clearCardsBtn.addEventListener('click', clearCards);
+    window.addEventListener('load', initCards);
+    window.addEventListener('resize', handleResize);
+    
+    // 卡片出现频率 - 移动设备略有降低
+    const intervalTime = getScreenWidth() < 768 ? 2000 : 1500;
+    setInterval(() => {
+      const probability = getScreenWidth() < 768 ? 0.7 : 0.8; // 移动设备70%概率
+      
+      if (Math.random() > (1 - probability)) {
+        addCard();
+        // 二次添加概率
+        if (Math.random() > 0.7) {
+          setTimeout(addCard, 500);
+        }
+      }
+    }, intervalTime);
+  </script>
+</body>
+</html>
