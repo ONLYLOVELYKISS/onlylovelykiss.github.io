@@ -1,5 +1,8 @@
 name: update-sidebar
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ master ]
