@@ -2,7 +2,7 @@ name: 自动更新侧边栏导航
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths-ignore:
       - 'index.html'
       - '.github/workflows/**'
