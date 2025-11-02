@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极简冷调 2048</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 配置Tailwind自定义主题 - 冷色调为主
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        主色: '#1e40af', // 深蓝主色
+                        副色: '#0369a1', // 天蓝辅助色
+                        强调色: '#22d3ee', // 亮蓝强调色
+                        浅色: '#f0f9ff', // 极浅蓝背景
+                        深色: '#0f172a'  // 深蓝灰文本
+                    },
+                    fontFamily: {
+                        无衬线: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        '悬浮': 'float 6s ease-in-out infinite',
+                        '慢脉冲': 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            /* 玻璃态样式优化 */
+            .玻璃态 {
+                background: rgba(255, 255, 255, 0.12);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                box-shadow: 0 4px 24px rgba(0, 40, 100, 0.1);
+            }
+            .方块容器 {
+                background: rgba(15, 23, 42, 0.3);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 8px 32px rgba(0, 30, 80, 0.2);
+            }
+            
+            /* 冷色调方块样式 - 带渐变效果 */
+            .方块-2 { 
+                background: linear-gradient(135deg, rgba(224, 242, 254, 0.8), rgba(191, 219, 254, 0.8)); 
+                color: #1e3a8a;
+            }
+            .方块-4 { 
+                background: linear-gradient(135deg, rgba(191, 219, 254, 0.8), rgba(148, 163, 184, 0.8)); 
+                color: #1e3a8a;
+            }
+            .方块-8 { 
+                background: linear-gradient(135deg, rgba(148, 163, 184, 0.8), rgba(94, 129, 172, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-16 { 
+                background: linear-gradient(135deg, rgba(94, 129, 172, 0.8), rgba(59, 130, 246, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-32 { 
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-64 { 
+                background: linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(29, 78, 216, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-128 { 
+                background: linear-gradient(135deg, rgba(29, 78, 216, 0.8), rgba(30, 64, 175, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-256 { 
+                background: linear-gradient(135deg, rgba(30, 64, 175, 0.8), rgba(16, 52, 166, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-512 { 
+                background: linear-gradient(135deg, rgba(16, 52, 166, 0.8), rgba(12, 45, 143, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-1024 { 
+                background: linear-gradient(135deg, rgba(12, 45, 143, 0.8), rgba(8, 38, 127, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-2048 { 
+                background: linear-gradient(135deg, rgba(8, 38, 127, 0.8), rgba(4, 30, 110, 0.8)); 
+                color: #f8fafc;
+            }
+            .方块-更高 { 
+                background: linear-gradient(135deg, rgba(3, 21, 75, 0.8), rgba(1, 13, 53, 0.8)); 
+                color: #f8fafc;
+            }
+            
+            /* 合并动画 */
+            .合并动画 {
+                animation: merge 0.3s ease-out;
+            }
+            @keyframes merge {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); }
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 font-无衬线 text-浅色 overflow-x-hidden">
+    <!-- 背景装饰 - 冷色调光晕 -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+        <div class="absolute top-1/4 -left-32 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[150px] opacity-10 animate-慢脉冲"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-[150px] opacity-10 animate-慢脉冲" style="animation-delay: 2s"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-[150px] opacity-10 animate-慢脉冲" style="animation-delay: 1s"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-6 max-w-md">
+        <!-- 精简页头 -->
+        <header class="mb-6 text-center">
+            <h1 class="text-[clamp(2rem,8vw,3.5rem)] font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-cyan-300 mb-1 tracking-tight">2048</h1>
+        </header>
+
+        <!-- 游戏统计 - 精简布局 -->
+        <div class="flex justify-center gap-3 mb-5">
+            <div class="玻璃态 rounded-lg px-4 py-2 flex flex-col items-center min-w-[80px]">
+                <span class="text-blue-100/70 text-xs uppercase tracking-wider">分数</span>
+                <span id="score" class="text-xl font-bold text-white">0</span>
+            </div>
+            <div class="玻璃态 rounded-lg px-4 py-2 flex flex-col items-center min-w-[80px]">
+                <span class="text-blue-100/70 text-xs uppercase tracking-wider">最高</span>
+                <span id="best-score" class="text-xl font-bold text-white">0</span>
+            </div>
+            <button id="new-game" class="玻璃态 hover:bg-white/15 transition-all duration-300 rounded-lg px-4 py-2 flex items-center gap-1">
+                <i class="fa fa-refresh text-sm"></i>
+                <span>重置</span>
+            </button>
+        </div>
+
+        <!-- 游戏棋盘 - 突出显示 -->
+        <div id="game-container" class="relative mx-auto aspect-square w-full mb-6">
+            <div id="game-board" class="方块容器 rounded-xl p-3 grid grid-cols-4 gap-3 w-full h-full">
+                <!-- 方块将在这里动态生成 -->
+            </div>
+            
+            <!-- 游戏状态提示 - 极简设计 -->
+            <div id="game-over" class="hidden absolute inset-0 玻璃态 rounded-xl flex flex-col items-center justify-center">
+                <h2 class="text-2xl font-bold text-blue-100 mb-2">游戏结束</h2>
+                <p class="text-blue-200/80 mb-4">得分: <span id="final-score">0</span></p>
+                <button id="try-again" class="玻璃态 hover:bg-white/15 transition-all duration-300 rounded-lg px-4 py-2">
+                    再试一次
+                </button>
+            </div>
+            
+            <div id="game-win" class="hidden absolute inset-0 玻璃态 rounded-xl flex flex-col items-center justify-center">
+                <h2 class="text-2xl font-bold text-cyan-100 mb-2">恭喜胜利</h2>
+                <p class="text-cyan-200/80 mb-4">你已达成2048!</p>
+                <button id="continue" class="玻璃态 hover:bg-white/15 transition-all duration-300 rounded-lg px-4 py-2">
+                    继续挑战
+                </button>
+            </div>
+        </div>
+
+        <!-- 极简操作提示 -->
+        <div class="text-center text-blue-200/60 text-xs mb-4">
+            <p>方向键或滑动控制方块</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 游戏核心变量
+            const 网格大小 = 4;
+            let 网格数据 = [];
+            let 当前分数 = 0;
+            let 最高分数 = localStorage.getItem('2048-best-score') || 0;
+            let 游戏结束 = false;
+            let 游戏胜利 = false;
+            let 可移动 = true;
+            let 合并动画队列 = []; // 用于跟踪需要添加合并动画的方块
+
+            // DOM元素引用
+            const 游戏棋盘 = document.getElementById('game-board');
+            const 分数显示 = document.getElementById('score');
+            const 最高分显示 = document.getElementById('best-score');
+            const 新游戏按钮 = document.getElementById('new-game');
+            const 再试一次按钮 = document.getElementById('try-again');
+            const 继续按钮 = document.getElementById('continue');
+            const 游戏结束提示 = document.getElementById('game-over');
+            const 游戏胜利提示 = document.getElementById('game-win');
+            const 最终得分显示 = document.getElementById('final-score');
+
+            /**
+             * 初始化游戏
+             */
+            function 初始化游戏() {
+                网格数据 = Array(网格大小).fill().map(() => Array(网格大小).fill(0));
+                当前分数 = 0;
+                游戏结束 = false;
+                游戏胜利 = false;
+                合并动画队列 = [];
+                
+                分数显示.textContent = 当前分数;
+                最高分显示.textContent = 最高分数;
+                游戏结束提示.classList.add('hidden');
+                游戏胜利提示.classList.add('hidden');
+                
+                添加新方块();
+                添加新方块();
+                渲染网格();
+            }
+
+            /**
+             * 渲染游戏网格
+             */
+            function 渲染网格() {
+                游戏棋盘.innerHTML = '';
+                
+                for (let y = 0; y < 网格大小; y++) {
+                    for (let x = 0; x < 网格大小; x++) {
+                        const 单元格 = document.createElement('div');
+                        单元格.className = 'rounded-lg flex items-center justify-center transition-all duration-250 ease-out';
+                        
+                        // 基础样式
+                        单元格.classList.add('glass');
+                        
+                        // 方块内容和样式
+                        if (网格数据[y][x] !== 0) {
+                            const 数值 = 网格数据[y][x];
+                            单元格.textContent = 数值;
+                            
+                            // 冷色调方块样式
+                            单元格.classList.add(`方块-${数值 <= 2048 ? 数值 : '更高'}`);
+                            
+                            // 文字大小自适应
+                            if (数值 >= 1000) {
+                                单元格.classList.add('text-sm');
+                            } else if (数值 >= 100) {
+                                单元格.classList.add('text-base');
+                            } else if (数值 >= 10) {
+                                单元格.classList.add('text-lg');
+                            } else {
+                                单元格.classList.add('text-xl');
+                            }
+                            
+                            单元格.classList.add('font-bold');
+                            
+                            // 添加合并动画
+                            const 索引 = y * 网格大小 + x;
+                            if (合并动画队列.includes(索引)) {
+                                单元格.classList.add('合并动画');
+                                // 移除动画标记
+                                合并动画队列 = 合并动画队列.filter(item => item !== 索引);
+                            }
+                        } else {
+                            // 空单元格样式更简洁
+                            单元格.classList.add('bg-white/5');
+                        }
+                        
+                        游戏棋盘.appendChild(单元格);
+                    }
+                }
+            }
+
+            /**
+             * 添加新方块
+             */
+            function 添加新方块() {
+                const 空位置 = [];
+                for (let y = 0; y < 网格大小; y++) {
+                    for (let x = 0; x < 网格大小; x++) {
+                        if (网格数据[y][x] === 0) {
+                            空位置.push({ x, y });
+                        }
+                    }
+                }
+                
+                if (空位置.length > 0) {
+                    const 随机位置 = 空位置[Math.floor(Math.random() * 空位置.length)];
+                    网格数据[随机位置.y][随机位置.x] = Math.random() < 0.9 ? 2 : 4;
+                    
+                    // 新方块出现动画
+                    const 索引 = 随机位置.y * 网格大小 + 随机位置.x;
+                    setTimeout(() => {
+                        const 方块 = 游戏棋盘.children[索引];
+                        if (方块) {
+                            方块.classList.add('scale-110');
+                            setTimeout(() => 方块.classList.remove('scale-110'), 200);
+                        }
+                    }, 250);
+                    
+                    return true;
+                }
+                
+                return false;
+            }
+
+            /**
+             * 检查游戏结束
+             */
+            function 检查游戏结束() {
+                // 检查空位置
+                for (let y = 0; y < 网格大小; y++) {
+                    for (let x = 0; x < 网格大小; x++) {
+                        if (网格数据[y][x] === 0) {
+                            return false;
+                        }
+                    }
+                }
+                
+                // 检查可合并方块
+                for (let y = 0; y < 网格大小; y++) {
+                    for (let x = 0; x < 网格大小; x++) {
+                        const 数值 = 网格数据[y][x];
+                        if (x < 网格大小 - 1 && 网格数据[y][x + 1] === 数值) return false;
+                        if (y < 网格大小 - 1 && 网格数据[y + 1][x] === 数值) return false;
+                    }
+                }
+                
+                // 游戏结束
+                游戏结束 = true;
+                最终得分显示.textContent = 当前分数;
+                游戏结束提示.classList.remove('hidden');
+                
+                // 更新最高分
+                if (当前分数 > 最高分数) {
+                    最高分数 = 当前分数;
+                    最高分显示.textContent = 最高分数;
+                    localStorage.setItem('2048-best-score', 最高分数);
+                }
+                
+                return true;
+            }
+
+            /**
+             * 检查游戏胜利
+             */
+            function 检查胜利() {
+                if (!游戏胜利) {
+                    for (let y = 0; y < 网格大小; y++) {
+                        for (let x = 0; x < 网格大小; x++) {
+                            if (网格数据[y][x] === 2048) {
+                                游戏胜利 = true;
+                                游戏胜利提示.classList.remove('hidden');
+                                
+                                if (当前分数 > 最高分数) {
+                                    最高分数 = 当前分数;
+                                    最高分显示.textContent = 最高分数;
+                                    localStorage.setItem('2048-best-score', 最高分数);
+                                }
+                                
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            /**
+             * 移动方块
+             */
+            function 移动(方向) {
+                if (!可移动 || 游戏结束) return false;
+                
+                可移动 = false;
+                let 有移动 = false;
+                合并动画队列 = []; // 重置动画队列
+                
+                switch (方向) {
+                    case 'up':
+                        有移动 = 向上移动();
+                        break;
+                    case 'down':
+                        有移动 = 向下移动();
+                        break;
+                    case 'left':
+                        有移动 = 向左移动();
+                        break;
+                    case 'right':
+                        有移动 = 向右移动();
+                        break;
+                }
+                
+                if (有移动) {
+                    渲染网格();
+                    setTimeout(() => {
+                        添加新方块();
+                        渲染网格();
+                        检查胜利();
+                        检查游戏结束();
+                        可移动 = true;
+                    }, 200);
+                } else {
+                    可移动 = true;
+                }
+                
+                return 有移动;
+            }
+
+            /**
+             * 向上移动
+             */
+            function 向上移动() {
+                let 有移动 = false;
+                
+                for (let x = 0; x < 网格大小; x++) {
+                    for (let y = 1; y < 网格大小; y++) {
+                        if (网格数据[y][x] !== 0) {
+                            let 新Y坐标 = y;
+                            // 移动到空位
+                            while (新Y坐标 > 0 && 网格数据[新Y坐标 - 1][x] === 0) {
+                                网格数据[新Y坐标 - 1][x] = 网格数据[新Y坐标][x];
+                                网格数据[新Y坐标][x] = 0;
+                                新Y坐标--;
+                                有移动 = true;
+                            }
+                            
+                            // 合并方块
+                            if (新Y坐标 > 0 && 网格数据[新Y坐标 - 1][x] === 网格数据[新Y坐标][x]) {
+                                网格数据[新Y坐标 - 1][x] *= 2;
+                                当前分数 += 网格数据[新Y坐标 - 1][x];
+                                分数显示.textContent = 当前分数;
+                                网格数据[新Y坐标][x] = 0;
+                                有移动 = true;
+                                
+                                // 记录需要添加合并动画的方块位置
+                                const 索引 = (新Y坐标 - 1) * 网格大小 + x;
+                                合并动画队列.push(索引);
+                            }
+                        }
+                    }
+                }
+                
+                return 有移动;
+            }
+
+            /**
+             * 向下移动
+             */
+            function 向下移动() {
+                let 有移动 = false;
+                
+                for (let x = 0; x < 网格大小; x++) {
+                    for (let y = 网格大小 - 2; y >= 0; y--) {
+                        if (网格数据[y][x] !== 0) {
+                            let 新Y坐标 = y;
+                            while (新Y坐标 < 网格大小 - 1 && 网格数据[新Y坐标 + 1][x] === 0) {
+                                网格数据[新Y坐标 + 1][x] = 网格数据[新Y坐标][x];
+                                网格数据[新Y坐标][x] = 0;
+                                新Y坐标++;
+                                有移动 = true;
+                            }
+                            
+                            if (新Y坐标 < 网格大小 - 1 && 网格数据[新Y坐标 + 1][x] === 网格数据[新Y坐标][x]) {
+                                网格数据[新Y坐标 + 1][x] *= 2;
+                                当前分数 += 网格数据[新Y坐标 + 1][x];
+                                分数显示.textContent = 当前分数;
+                                网格数据[新Y坐标][x] = 0;
+                                有移动 = true;
+                                
+                                const 索引 = (新Y坐标 + 1) * 网格大小 + x;
+                                合并动画队列.push(索引);
+                            }
+                        }
+                    }
+                }
+                
+                return 有移动;
+            }
+
+            /**
+             * 向左移动
+             */
+            function 向左移动() {
+                let 有移动 = false;
+                
+                for (let y = 0; y < 网格大小; y++) {
+                    for (let x = 1; x < 网格大小; x++) {
+                        if (网格数据[y][x] !== 0) {
+                            let 新X坐标 = x;
+                            while (新X坐标 > 0 && 网格数据[y][新X坐标 - 1] === 0) {
+                                网格数据[y][新X坐标 - 1] = 网格数据[y][新X坐标];
+                                网格数据[y][新X坐标] = 0;
+                                新X坐标--;
+                                有移动 = true;
+                            }
+                            
+                            if (新X坐标 > 0 && 网格数据[y][新X坐标 - 1] === 网格数据[y][新X坐标]) {
+                                网格数据[y][新X坐标 - 1] *= 2;
+                                当前分数 += 网格数据[y][新X坐标 - 1];
+                                分数显示.textContent = 当前分数;
+                                网格数据[y][新X坐标] = 0;
+                                有移动 = true;
+                                
+                                const 索引 = y * 网格大小 + (新X坐标 - 1);
+                                合并动画队列.push(索引);
+                            }
+                        }
+                    }
+                }
+                
+                return 有移动;
+            }
+
+            /**
+             * 向右移动
+             */
+            function 向右移动() {
+                let 有移动 = false;
+                
+                for (let y = 0; y < 网格大小; y++) {
+                    for (let x = 网格大小 - 2; x >= 0; x--) {
+                        if (网格数据[y][x] !== 0) {
+                            let 新X坐标 = x;
+                            while (新X坐标 < 网格大小 - 1 && 网格数据[y][新X坐标 + 1] === 0) {
+                                网格数据[y][新X坐标 + 1] = 网格数据[y][新X坐标];
+                                网格数据[y][新X坐标] = 0;
+                                新X坐标++;
+                                有移动 = true;
+                            }
+                            
+                            if (新X坐标 < 网格大小 - 1 && 网格数据[y][新X坐标 + 1] === 网格数据[y][新X坐标]) {
+                                网格数据[y][新X坐标 + 1] *= 2;
+                                当前分数 += 网格数据[y][新X坐标 + 1];
+                                分数显示.textContent = 当前分数;
+                                网格数据[y][新X坐标] = 0;
+                                有移动 = true;
+                                
+                                const 索引 = y * 网格大小 + (新X坐标 + 1);
+                                合并动画队列.push(索引);
+                            }
+                        }
+                    }
+                }
+                
+                return 有移动;
+            }
+
+            /**
+             * 键盘控制
+             */
+            document.addEventListener('keydown', (e) => {
+                switch (e.key) {
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        移动('up');
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        移动('down');
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        移动('left');
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        移动('right');
+                        break;
+                }
+            });
+
+            /**
+             * 触摸控制
+             */
+            let 触摸起始X = 0;
+            let 触摸起始Y = 0;
+
+            document.addEventListener('touchstart', (e) => {
+                触摸起始X = e.touches[0].clientX;
+                触摸起始Y = e.touches[0].clientY;
+            }, false);
+
+            document.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            }, false);
+
+            document.addEventListener('touchend', (e) => {
+                if (!可移动) return;
+                
+                const 触摸结束X = e.changedTouches[0].clientX;
+                const 触摸结束Y = e.changedTouches[0].clientY;
+                
+                const 水平差值 = 触摸结束X - 触摸起始X;
+                const 垂直差值 = 触摸结束Y - 触摸起始Y;
+                
+                // 判断滑动方向
+                if (Math.abs(水平差值) > Math.abs(垂直差值)) {
+                    if (Math.abs(水平差值) > 40) { // 滑动阈值
+                        移动(水平差值 > 0 ? 'right' : 'left');
+                    }
+                } else {
+                    if (Math.abs(垂直差值) > 40) { // 滑动阈值
+                        移动(垂直差值 > 0 ? 'down' : 'up');
+                    }
+                }
+            }, false);
+
+            /**
+             * 按钮事件
+             */
+            新游戏按钮.addEventListener('click', 初始化游戏);
+            再试一次按钮.addEventListener('click', 初始化游戏);
+            继续按钮.addEventListener('click', () => {
+                游戏胜利提示.classList.add('hidden');
+            });
+
+            // 初始化游戏
+            初始化游戏();
+        });
+    </script>
+</body>
+</html>
