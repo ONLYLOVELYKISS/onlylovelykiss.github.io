@@ -1,11 +1,8 @@
-name: update-sidebar
-
-permissions:
-  contents: write
+name: 自动更新侧边栏导航
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths-ignore:
       - 'index.html'
       - '.github/workflows/**'
@@ -23,27 +20,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: 安装依赖
-        run: |
-          sudo apt-get install -y tree
+        run: sudo apt-get install -y tree
 
       - name: 生成侧边栏内容
         run: |
-          # 排除基础配置目录
           EXCLUDE_DIRS=("css" "js" "img" "fonts" ".github" "Toy")
-          
-          # 收集所有目录
           DIRS=$(find . -maxdepth 1 -type d ! -name "." $(printf "! -name %s " "${EXCLUDE_DIRS[@]}") | sed 's|./||')
           
-          # 生成侧边栏HTML片段
           SIDEBAR_CONTENT=""
           for dir in $DIRS; do
-            # 获取目录名作为标题
             TITLE=$(echo "$dir" | sed 's/^./\U&/')
-            
-            # 查找目录下的HTML文件
             FILES=$(find "$dir" -name "*.html" | sed 's|./||')
             
-            # 生成目录项
             if [ -n "$FILES" ]; then
               SIDEBAR_CONTENT+="
                 <li>
@@ -52,12 +40,11 @@ jobs:
                   </a>
                   <ul class=\"space-y-2 pt-4 pl-6\">"
               
-              # 生成文件项
               for file in $FILES; do
                 FILENAME=$(basename "$file" .html | sed 's/^./\U&/')
                 SIDEBAR_CONTENT+="
                   <li>
-                    <a href=\"/$file\" target=\"_self\" class=\"block p-2 rounded-lg text-gray-200 text-lg hover:bg-gray-700/50 transition-colors duration-200\">
+                    <a href=\"/$file\" class=\"block p-2 rounded-lg text-gray-200 text-lg hover:bg-gray-700/50 transition-colors duration-200\">
                       $FILENAME
                     </a>
                   </li>"
@@ -69,23 +56,33 @@ jobs:
             fi
           done
           
-          # 保存生成的内容
           echo "$SIDEBAR_CONTENT" > sidebar-temp.html
 
       - name: 更新index.html中的侧边栏
         run: |
-          # 使用sed替换侧边栏占位符内容
           sed -i '/<!-- AUTO-GENERATED-SIDEBAR -->/,/<!-- END-AUTO-GENERATED-SIDEBAR -->/{//!d;}' index.html
           sed -i "/<!-- AUTO-GENERATED-SIDEBAR -->/r sidebar-temp.html" index.html
 
-      - name: 提交更改
+      # 新增步骤：配置SSH认证（使用Deploy key）
+      - name: 配置SSH密钥
+        uses: webfactory/ssh-agent@v0.5.4  # 加载SSH密钥的Action
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}  # 引用仓库Secrets中的私钥
+
+      - name: 提交并推送更改
         run: |
+          # 配置Git身份
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          
+          # 将远程仓库地址从HTTPS切换为SSH
+          git remote set-url origin git@github.com:ONLYLOVELYKISS/onlylovelykiss.github.io.git
+          
+          # 检查变更并推送
           git add index.html
           if git diff --staged --quiet; then
-            echo "没有需要提交的更改"
+            echo "无侧边栏更新，无需提交"
           else
-            git commit -m "自动更新侧边栏导航"
-            git push
+            git commit -m "自动更新侧边栏导航（SSH Deploy key认证）"
+            git push origin main  # 通过SSH推送，使用Deploy key认证
           fi
