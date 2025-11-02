@@ -1,5 +1,8 @@
 name: 自动更新侧边栏导航
 
+permissions:
+  contents: write
+  
 on:
   push:
     branches: [ masterr ]
