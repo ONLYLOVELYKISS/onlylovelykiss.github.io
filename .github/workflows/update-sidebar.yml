@@ -14,53 +14,72 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Scan directories and update sidebar with HTML files
         run: |
-          # 1. 找到根目录和子目录中的所有 HTML 文件（排除不必要的目录）
+          # 1. Find all HTML files (exclude static asset folders)
           html_files=$(find . -type f -name "*.html" \
             ! -path './css/*' ! -path './fonts/*' ! -path './img/*' ! -path './js/*' \
             ! -path './.github/*' ! -name 'LICENSE' ! -name 'README.md' ! -name 'index.html')
 
-          # 2. 初始化一个空的字典来存储按目录分组的链接
+          # 2. Initialize associative array to collect links per directory
           declare -A sidebar_links_map
 
-          # 3. 遍历所有找到的 HTML 文件，按目录分组
-          for file in $html_files; do
-            # 获取文件所在的目录名称
+          # 3. Iterate files and group by directory
+          while IFS= read -r file; do
             dir_name=$(dirname "$file")
-            # 获取文件名（不带扩展名）
             base_name=$(basename "$file" .html)
 
-            # 将路径格式化为 URL 形式
-            # 例如：./docs/xxx/xxx.html -> https://xxx.github.io/docs/xxx/xxx.html
-            url="https://onlylovelykiss.github.io${dir_name#./}/$base_name.html"
-            
-            # 将文件链接添加到对应目录的数组中
-            sidebar_links_map[$dir_name]+="<li><a href=\"$url\" class=\"block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200\">$base_name</a></li>\n"
-          done
+            # Build URL: handle root (.) directory properly
+            if [ "$dir_name" = "." ]; then
+              url="https://onlylovelykiss.github.io/$base_name.html"
+            else
+              # strip leading './' if present
+              path_no_prefix="${dir_name#./}"
+              url="https://onlylovelykiss.github.io/$path_no_prefix/$base_name.html"
+            fi
 
-          # 4. 为每个目录生成一个包含其 HTML 文件链接的列表
+            # Append list item to directory's link list
+            sidebar_links_map["$dir_name"]+=$'\n'"<li><a href=\"$url\" class=\"block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200\">$base_name</a></li>"
+          done <<< "$html_files"
+
+          # 4. Build final sidebar HTML
           sidebar_links=""
           for dir in "${!sidebar_links_map[@]}"; do
-            # 生成目录标题链接
-            dir_name_display=$(basename "$dir")  # 获取目录名称（只显示目录名称）
-            sidebar_links+="<li><a href=\"#\" class=\"block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200\">$dir_name_display</a>
-            <ul class=\"space-y-2 pt-4 pl-6\">${sidebar_links_map[$dir]}</ul></li>\n"
+            dir_name_display=$(basename "$dir")
+            # If dir is ".", show "Root" or empty label as needed
+            if [ "$dir" = "." ]; then
+              dir_name_display="Root"
+            fi
+            sidebar_links+=$'\n'"<li><a href=\"#\" class=\"block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200\">$dir_name_display</a><ul class=\"space-y-2 pt-4 pl-6\">${sidebar_links_map[$dir]}</ul></li>"
           done
 
-          # 5. 读取现有的 sidebar.html 文件
-          sidebar_file="./index.html"  # 修改为您的实际文件路径
-          sidebar_content=$(cat $sidebar_file)
-
+          # 5. Replace auto-generated block in index.html safely
+          sidebar_file="./index.html"
           tmpfile=$(mktemp)
+
+          # Use awk to replace between markers. Put comments on their own lines.
+          # The generated sidebar HTML is passed via an environment variable.
+          export SIDEBAR_LINKS="$sidebar_links"
+
           awk '
             BEGIN {inside=0}
-            /<!-- AUTO-GENERATED-SIDEBAR -->/ {print; print ENVIRON["SIDEBAR_LINKS"]; inside=1; next}
-            /<!-- END-AUTO-GENERATED-SIDEBAR -->/ {inside=0}
+            /<!-- AUTO-GENERATED-SIDEBAR -->/ {
+              print
+              # print the env var containing the generated links (may contain newlines)
+              n = split(ENVIRON["SIDEBAR_LINKS"], lines, "\n")
+              for (i=1; i<=n; i++) if (lines[i] != "") print lines[i]
+              inside=1
+              next
+            }
+            /<!-- END-AUTO-GENERATED-SIDEBAR -->/ {
+              inside=0
+              print
+              next
+            }
             !inside {print}
-          ' SIDEBAR_LINKS="$sidebar_links" "$sidebar_file" > "$tmpfile" && mv "$tmpfile" "$sidebar_file"# 6. 替换掉自动生成的部分，插入新生成的 HTML 文件链接
-
+          ' "$sidebar_file" > "$tmpfile" && mv "$tmpfile" "$sidebar_file"
+          # 6. 替换掉自动生成的部分，插入新生成的 HTML 文件链接
+          
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v7
         with:
