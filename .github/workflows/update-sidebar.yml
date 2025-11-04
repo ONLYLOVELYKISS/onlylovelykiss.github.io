@@ -53,11 +53,13 @@ jobs:
           sidebar_file="./index.html"  # 修改为您的实际文件路径
           sidebar_content=$(cat $sidebar_file)
 
-          # 6. 替换掉自动生成的部分，插入新生成的 HTML 文件链接
-          new_sidebar_content=$(echo "$sidebar_content" | sed "/<!-- AUTO-GENERATED-SIDEBAR -->/,/<!-- END-AUTO-GENERATED-SIDEBAR -->/c\<!-- AUTO-GENERATED-SIDEBAR -->\n$sidebar_links<!-- END-AUTO-GENERATED-SIDEBAR -->")
-
-          # 7. 写回更新后的 sidebar.html 文件
-          echo "$new_sidebar_content" > $sidebar_file
+          tmpfile=$(mktemp)
+          awk '
+            BEGIN {inside=0}
+            /<!-- AUTO-GENERATED-SIDEBAR -->/ {print; print ENVIRON["SIDEBAR_LINKS"]; inside=1; next}
+            /<!-- END-AUTO-GENERATED-SIDEBAR -->/ {inside=0}
+            !inside {print}
+          ' SIDEBAR_LINKS="$sidebar_links" "$sidebar_file" > "$tmpfile" && mv "$tmpfile" "$sidebar_file"# 6. 替换掉自动生成的部分，插入新生成的 HTML 文件链接
 
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v7
