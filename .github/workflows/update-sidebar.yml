@@ -1,91 +1,67 @@
-name: 自动更新侧边栏导航
+name: Update Sidebar Navigation with Directory Grouping
 
-permissions:
-  contents: write
-  
 on:
   push:
-    branches: [ masterr ]
-    paths-ignore:
-      - 'index.html'
-      - '.github/workflows/**'
-      - 'css/**'
-      - 'js/**'
-      - 'img/**'
-      - 'fonts/**'
-      - 'LICENSE'
-      - 'README.md'
+    paths:
+      - '**/*'
+  pull_request:
+    paths:
+      - '**/*'
 
 jobs:
-  update-sidebar:
+  update_sidebar:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: 安装依赖
-        run: sudo apt-get install -y tree
-
-      - name: 生成侧边栏内容
+      - name: Scan directories and update sidebar with HTML files
         run: |
-          EXCLUDE_DIRS=("css" "js" "img" "fonts" ".github" "Toy")
-          DIRS=$(find . -maxdepth 1 -type d ! -name "." $(printf "! -name %s " "${EXCLUDE_DIRS[@]}") | sed 's|./||')
-          
-          SIDEBAR_CONTENT=""
-          for dir in $DIRS; do
-            TITLE=$(echo "$dir" | sed 's/^./\U&/')
-            FILES=$(find "$dir" -name "*.html" | sed 's|./||')
+          # 1. 找到根目录和子目录中的所有 HTML 文件（排除不必要的目录）
+          html_files=$(find . -type f -name "*.html" \
+            ! -path './css/*' ! -path './fonts/*' ! -path './img/*' ! -path './js/*' \
+            ! -path './.github/*' ! -name 'LICENSE' ! -name 'README.md' ! -name 'index.html')
+
+          # 2. 初始化一个空的字典来存储按目录分组的链接
+          declare -A sidebar_links_map
+
+          # 3. 遍历所有找到的 HTML 文件，按目录分组
+          for file in $html_files; do
+            # 获取文件所在的目录名称
+            dir_name=$(dirname "$file")
+            # 获取文件名（不带扩展名）
+            base_name=$(basename "$file" .html)
+
+            # 将路径格式化为 URL 形式
+            # 例如：./docs/xxx/xxx.html -> https://xxx.github.io/docs/xxx/xxx.html
+            url="https://onlylovelykiss.github.io${dir_name#./}/$base_name.html"
             
-            if [ -n "$FILES" ]; then
-              SIDEBAR_CONTENT+="
-                <li>
-                  <a href=\"#\" class=\"block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200\">
-                    $TITLE
-                  </a>
-                  <ul class=\"space-y-2 pt-4 pl-6\">"
-              
-              for file in $FILES; do
-                FILENAME=$(basename "$file" .html | sed 's/^./\U&/')
-                SIDEBAR_CONTENT+="
-                  <li>
-                    <a href=\"/$file\" class=\"block p-2 rounded-lg text-gray-200 text-lg hover:bg-gray-700/50 transition-colors duration-200\">
-                      $FILENAME
-                    </a>
-                  </li>"
-              done
-              
-              SIDEBAR_CONTENT+="
-                  </ul>
-                </li>"
-            fi
+            # 将文件链接添加到对应目录的数组中
+            sidebar_links_map[$dir_name]+="<li><a href=\"$url\" class=\"block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200\">$base_name</a></li>\n"
           done
-          
-          echo "$SIDEBAR_CONTENT" > sidebar-temp.html
 
-      - name: 更新index.html中的侧边栏
-        run: |
-          sed -i '/<!-- AUTO-GENERATED-SIDEBAR -->/,/<!-- END-AUTO-GENERATED-SIDEBAR -->/{//!d;}' index.html
-          sed -i "/<!-- AUTO-GENERATED-SIDEBAR -->/r sidebar-temp.html" index.html
+          # 4. 为每个目录生成一个包含其 HTML 文件链接的列表
+          sidebar_links=""
+          for dir in "${!sidebar_links_map[@]}"; do
+            # 生成目录标题链接
+            dir_name_display=$(basename "$dir")  # 获取目录名称（只显示目录名称）
+            sidebar_links+="<li><a href=\"#\" class=\"block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200\">$dir_name_display</a>
+            <ul class=\"space-y-2 pt-4 pl-6\">${sidebar_links_map[$dir]}</ul></li>\n"
+          done
 
-      # 新增步骤：配置SSH认证（使用Deploy key）
-      - name: 配置SSH密钥
-        uses: webfactory/ssh-agent@v0.5.4  # 加载SSH密钥的Action
+          # 5. 读取现有的 sidebar.html 文件
+          sidebar_file="./index.html"  # 修改为您的实际文件路径
+          sidebar_content=$(cat $sidebar_file)
+
+          # 6. 替换掉自动生成的部分，插入新生成的 HTML 文件链接
+          new_sidebar_content=$(echo "$sidebar_content" | sed "/<!-- AUTO-GENERATED-SIDEBAR -->/,/<!-- END-AUTO-GENERATED-SIDEBAR -->/c\<!-- AUTO-GENERATED-SIDEBAR -->\n$sidebar_links<!-- END-AUTO-GENERATED-SIDEBAR -->")
+
+          # 7. 写回更新后的 sidebar.html 文件
+          echo "$new_sidebar_content" > $sidebar_file
+
+      - name: Commit and push changes
+        uses: EndBug/add-and-commit@v7
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}  # 引用仓库Secrets中的私钥
-
-      - name: 提交并推送更改
-        run: |
-          # 配置Git身份
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          
-          # 将远程仓库地址从HTTPS切换为SSH
-          git remote set-url origin git@github.com:ONLYLOVELYKISS/onlylovelykiss.github.io.git
-          
-          # 检查变更并推送
-          git add index.html
-          if git diff --staged --quiet; then
-            echo "无侧边栏更新，无需提交"
-          else
-            git commit -m "自动更新侧边栏导航（SSH Deploy key认证）"
-            git push origin main  # 通过SSH推送，使用Deploy key认证
-          fi
+          author_name: 'ONLYLOVELYKISS'
+          author_email: 'onlylovely_kiss@outlook.com'
+          message: 'Update sidebar with HTML files grouped by directories'
