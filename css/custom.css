@@ -24,18 +24,24 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background-color: rgba(0, 0, 0, 0.45);
-    /* 移动端高亮消除与触控优化 */
+    /* 日间模式：轻透白遮罩，保持清爽 */
+    background-color: rgba(255, 255, 255, 0.25);
+    transition: background-color 0.5s ease;
+
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
 }
 
-/* iOS Safe Area 底部留白适配 */
+/* 🌙 夜间模式：沉浸式暗色半透明遮罩 */
+html.dark body {
+    background-color: rgba(0, 0, 0, 0.58);
+}
+
+/* iOS Safe Area 底部留白 */
 .mobile-bottom-bar {
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
 }
 
-/* 隐藏移动端水平滚动条 */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
@@ -50,26 +56,49 @@ body {
     gap: 0.75rem;
     padding: 0.75rem;
     border-radius: 0.875rem;
-    color: #cbd5e1;
+    color: #475569;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+html.dark .nav-rail-btn {
+    color: #cbd5e1;
+}
+
 .nav-rail-btn:hover {
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: rgba(0, 0, 0, 0.08);
+    color: #0f172a;
+}
+
+html.dark .nav-rail-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
     color: #ffffff;
 }
 
 .nav-rail-btn.active {
-    background-color: rgba(59, 130, 246, 0.2);
-    color: #60a5fa;
-    border: 1px solid rgba(59, 130, 246, 0.35);
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
+html.dark .nav-rail-btn.active {
+    background-color: rgba(59, 130, 246, 0.25);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+/* Bento Card 昼夜不同透明度与模糊度优化 */
 .bento-card {
-    background: rgba(15, 23, 42, 0.65);
+    background: rgba(255, 255, 255, 0.55);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+html.dark .bento-card {
+    background: rgba(10, 15, 28, 0.72);
+    border-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
@@ -79,14 +108,24 @@ body {
     gap: 0.6rem;
     padding: 0.75rem 0.85rem;
     border-radius: 1rem;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark .bento-item {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .bento-item:hover, .bento-item:active {
     transform: translateY(-2px) scale(1.01);
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+html.dark .bento-item:hover, html.dark .bento-item:active {
+    background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -104,33 +143,52 @@ body {
 .bento-item .title {
     font-size: 0.8rem;
     font-weight: 600;
+    color: #0f172a;
+}
+
+html.dark .bento-item .title {
     color: #f8fafc;
 }
 
 .bento-item .sub {
     font-size: 0.65rem;
+    color: #64748b;
+}
+
+html.dark .bento-item .sub {
     color: #94a3b8;
 }
 
 .engine-tab {
     padding: 0.35rem 0.75rem;
     border-radius: 0.6rem;
-    color: #cbd5e1;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #475569;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
     white-space: nowrap;
 }
 
+html.dark .engine-tab {
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .engine-tab:hover, .engine-tab:active {
+    color: #0f172a;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+html.dark .engine-tab:hover, html.dark .engine-tab:active {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.18);
 }
 
 .engine-tab.active {
-    color: #ffffff;
-    background: #2563eb;
-    border-color: #3b82f6;
+    color: #ffffff !important;
+    background: #2563eb !important;
+    border-color: #3b82f6 !important;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
 }
 
