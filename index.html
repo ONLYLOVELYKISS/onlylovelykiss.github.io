@@ -1,255 +1,411 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>余心留白🙄</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#090d16',
+                        cardbg: 'rgba(255, 255, 255, 0.05)',
+                        borderbg: 'rgba(255, 255, 255, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="css/custom.css">
 </head>
-<body class="min-h-screen flex flex-col items-center px-8 sm:px-16 lg:px-24 py-8 space-y-12 dark:bg-gray-900">
+<body class="min-h-screen text-gray-100 flex flex-col lg:flex-row font-sans selection:bg-blue-500 selection:text-white dark pb-20 lg:pb-0">
 
-    <div id="sidebar-container">
-        <div id="sidebar">
-            <div class="flex-grow">
-                <h3 class="text-3xl font-bold mb-6 border-b-2 border-red-500 pb-4 text-white">导航</h3>
-                <ul class="space-y-4">
-                    <li>
-                        <a href="#" class="block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200">
-                            作者
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="block p-4 rounded-lg text-white text-xl font-medium hover:bg-gray-700/50 transition-colors duration-200">
-                            AI集合
-                        </a>
-                        <ul class="space-y-2 pt-4 pl-6">
-                            <li>
-                                <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="block p-2 rounded-lg text-gray-200 text-lg hover:bg-gray-700/50 transition-colors duration-200">
-                                    Gemini
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://chat.openai.com/" target="_blank" rel="noopener noreferrer" class="block p-2 rounded-lg text-gray-200 text-lg hover:bg-gray-700/50 transition-colors duration-200">
-                                    ChatGPT
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://gork.ai/" target="_blank" rel="noopener noreferrer" class="block p-2 rounded-lg text-gray-200 text-lg hover:bg-gray-700/50 transition-colors duration-200">
-                                    Gork
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!-- AUTO-GENERATED-SIDEBAR -->
-                    <!-- END-AUTO-GENERATED-SIDEBAR -->
-                </ul>
+    <aside id="sidebar-container" class="hidden lg:flex fixed top-0 left-0 h-full w-64 bg-black/75 backdrop-blur-2xl border-r border-white/10 z-50 flex-col justify-between p-4">
+        <div class="space-y-8">
+            <div class="flex items-center gap-3 px-2">
+                <a href="https://www.linkcloud.network/auth/login" target="_blank" class="secret-logo-btn w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xl shadow-lg shadow-blue-500/30 hover:rotate-12 transition shrink-0" title="LinkCloud 登录 (连续点击5次解锁私域)">
+                    🙄
+                </a>
+                <span class="font-extrabold text-lg tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-200">
+                    余心留白
+                </span>
             </div>
+
+            <nav class="space-y-2">
+                <a href="#section-search" class="nav-rail-btn active">
+                    <span class="text-xl">🔍</span>
+                    <span class="text-sm font-medium">快捷搜索</span>
+                </a>
+                <a href="#section-todo" class="nav-rail-btn">
+                    <span class="text-xl">📝</span>
+                    <span class="text-sm font-medium">待办清单</span>
+                </a>
+                <a href="#section-tools" class="nav-rail-btn">
+                    <span class="text-xl">🛠️</span>
+                    <span class="text-sm font-medium">常用工具</span>
+                </a>
+                <a href="#section-learn" class="nav-rail-btn">
+                    <span class="text-xl">📚</span>
+                    <span class="text-sm font-medium">学习资源</span>
+                </a>
+                <a href="#section-social" class="nav-rail-btn">
+                    <span class="text-xl">🎬</span>
+                    <span class="text-sm font-medium">娱乐社交</span>
+                </a>
+                <a href="#section-scholar" class="nav-rail-btn">
+                    <span class="text-xl">🔬</span>
+                    <span class="text-sm font-medium">学术科研</span>
+                </a>
+                
+                <a href="#section-hub" class="sidebar-hub-link nav-rail-btn text-purple-400 border border-purple-500/20 bg-purple-500/10 hidden">
+                    <span class="text-xl">🔐</span>
+                    <span class="text-sm font-medium">极客私域</span>
+                </a>
+            </nav>
         </div>
+
+        <div class="border-t border-white/10 pt-4 px-2">
+            <a href="https://github.com/ONLYLOVELYKISS" target="_blank" class="flex items-center gap-3 group">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold group-hover:bg-blue-600 transition">
+                    K
+                </div>
+                <div class="text-xs">
+                    <p class="font-medium text-gray-200 group-hover:text-blue-400">Kangの小小世界</p>
+                    <p class="text-gray-400">Personal Space</p>
+                </div>
+            </a>
+        </div>
+    </aside>
+
+    <div class="flex-1 lg:ml-64 p-3 sm:p-6 lg:p-12 space-y-6 sm:space-y-8 max-w-7xl mx-auto w-full">
+
+        <header class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 border-b border-white/10 pb-6 items-center">
+            <div class="space-y-2 md:col-span-2">
+                <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight flex items-center justify-between sm:justify-start gap-3">
+                    <span>余心留白</span>
+                    <a href="https://www.linkcloud.network/auth/login" target="_blank" rel="noopener noreferrer" class="secret-logo-btn inline-block hover:scale-125 transition duration-200 p-1" title="LinkCloud 登录">
+                        🙄
+                    </a>
+                </h1>
+                <p id="hitokoto" class="text-xs sm:text-base text-gray-300 italic min-h-[24px] flex items-center"></p>
+                <script src="https://v1.hitokoto.cn/?encode=js&amp;select=%23hitokoto" defer></script>
+            </div>
+            
+            <div class="bento-card p-4 rounded-2xl flex items-center justify-between text-right">
+                <div class="text-left space-y-1">
+                    <div id="weather-info" class="text-xs sm:text-sm font-semibold text-blue-300 flex items-center gap-1">
+                        <span>☀️</span> <span>26°C 晴</span>
+                    </div>
+                    <div id="clock-date" class="text-[10px] sm:text-xs text-gray-300">2026-08-10 星期一</div>
+                </div>
+                <div id="clock-time" class="text-xl sm:text-3xl font-black font-mono tracking-wider text-blue-400">00:00:00</div>
+            </div>
+        </header>
+
+        <section id="section-search" class="bento-card p-4 sm:p-6 rounded-3xl space-y-3 sm:space-y-4">
+            <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 text-xs no-scrollbar" id="engine-selector">
+                <button data-engine="google" class="engine-tab active">Google</button>
+                <button data-engine="baidu" class="engine-tab">Baidu</button>
+                <button data-engine="bilibili" class="engine-tab">Bilibili</button>
+                <button data-engine="github" class="engine-tab">GitHub</button>
+                <button data-engine="zhihu" class="engine-tab">知乎</button>
+                <button data-engine="deepl" class="engine-tab">DeepL</button>
+            </div>
+
+            <div class="relative flex items-center">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="搜索或输入网址..."
+                    class="w-full pl-4 pr-20 sm:pr-28 py-3.5 bg-black/50 border border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400 text-sm sm:text-base transition"
+                />
+                <button
+                    id="search-submit-btn"
+                    class="absolute right-1.5 px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs sm:text-sm rounded-xl shadow-lg shadow-blue-600/30 active:scale-95 transition"
+                >
+                    搜索
+                </button>
+            </div>
+            <p id="search-error-message" class="error-message text-xs text-red-400 text-center hidden">⚠️ 请输入内容后再发起搜索！</p>
+        </section>
+
+        <section id="section-todo" class="bento-card p-4 sm:p-6 rounded-3xl space-y-3 sm:space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> 每日任务待办 (Todo List)
+                </h2>
+                <span class="text-xs text-gray-400" id="todo-count">0/0 完成</span>
+            </div>
+            <div class="flex gap-2">
+                <input
+                    type="text"
+                    id="todo-input"
+                    placeholder="添加待办事项..."
+                    class="flex-1 px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-white placeholder-gray-400"
+                />
+                <button id="add-todo-btn" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white text-xs sm:text-sm font-medium rounded-xl transition">
+                    添加
+                </button>
+            </div>
+            <ul id="todo-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></ul>
+        </section>
+
+        <main class="space-y-8 sm:space-y-10">
+            <section id="section-hub" class="bento-card p-4 sm:p-6 rounded-3xl border border-purple-500/30 bg-purple-950/20 space-y-4 hidden transition-all duration-500">
+                <div class="flex items-center justify-between border-b border-purple-500/20 pb-3">
+                    <h2 class="text-lg sm:text-xl font-black text-purple-300 flex items-center gap-2">
+                        <span class="p-1.5 bg-purple-500/20 rounded-lg text-purple-400">🔐</span> 极客私域 Hub
+                    </h2>
+                    <span class="text-[10px] sm:text-xs text-purple-400/60 font-mono">Private Gateways</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <a href="https://missav.ws" target="_blank" class="bento-item border-purple-500/20 hover:border-purple-400">
+                        <div class="icon-box bg-purple-500/20 text-purple-300">⚡</div>
+                        <div>
+                            <div class="title">Miss</div>
+                            <div class="sub">Private Node 1</div>
+                        </div>
+                    </a>
+                    <a href="https://hanime1.me" target="_blank" class="bento-item border-purple-500/20 hover:border-purple-400">
+                        <div class="icon-box bg-indigo-500/20 text-indigo-300">🛡️</div>
+                        <div>
+                            <div class="title">Hanime1</div>
+                            <div class="sub">Private Node 2</div>
+                        </div>
+                    </a>
+                    <a href="https://www.pornhub.com/" target="_blank" class="bento-item border-purple-500/20 hover:border-purple-400">
+                        <div class="icon-box bg-pink-500/20 text-pink-300">🌐</div>
+                        <div>
+                            <div class="title">Porn</div>
+                            <div class="sub">Private Node 3</div>
+                        </div>
+                    </a>
+                    <a href="https://jable.tv/" target="_blank" class="bento-item border-purple-500/20 hover:border-purple-400">
+                        <div class="icon-box bg-fuchsia-500/20 text-fuchsia-300">🚀</div>
+                        <div>
+                            <div class="title">Jable</div>
+                            <div class="sub">Private Node 4</div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="section-tools" class="space-y-3 sm:space-y-4">
+                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> 常用工具
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <a href="https://mail.qq.com" target="_blank" class="bento-item">
+                        <div class="icon-box bg-blue-500/20 text-blue-400">✉️</div>
+                        <div>
+                            <div class="title">QQ 邮箱</div>
+                            <div class="sub">Tencent Mail</div>
+                        </div>
+                    </a>
+                    <a href="https://mail.google.com" target="_blank" class="bento-item">
+                        <div class="icon-box bg-red-500/20 text-red-400">📬</div>
+                        <div>
+                            <div class="title">Gmail</div>
+                            <div class="sub">Google Mail</div>
+                        </div>
+                    </a>
+                    <a href="https://www.jsdelivr.com/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-orange-500/20 text-orange-400">⚡</div>
+                        <div>
+                            <div class="title">jsDelivr</div>
+                            <div class="sub">Open Source CDN</div>
+                        </div>
+                    </a>
+                    <a href="https://www.deepl.com/translator" target="_blank" class="bento-item">
+                        <div class="icon-box bg-cyan-500/20 text-cyan-400">🌐</div>
+                        <div>
+                            <div class="title">DeepL</div>
+                            <div class="sub">AI Translator</div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="section-learn" class="space-y-3 sm:space-y-4">
+                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 学习与开源资源
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <a href="https://github.com" target="_blank" class="bento-item">
+                        <div class="icon-box bg-slate-500/20 text-gray-200">💻</div>
+                        <div>
+                            <div class="title">GitHub</div>
+                            <div class="sub">Developer Platform</div>
+                        </div>
+                    </a>
+                    <a href="https://www.ghxi.com" target="_blank" class="bento-item">
+                        <div class="icon-box bg-amber-500/20 text-amber-400">🌰</div>
+                        <div>
+                            <div class="title">果核剥壳</div>
+                            <div class="sub">Software Sharing</div>
+                        </div>
+                    </a>
+                    <a href="https://www.bdgroup-lab.com/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-emerald-500/20 text-emerald-400">📚</div>
+                        <div>
+                            <div class="title">编动小组</div>
+                            <div class="sub">Lab Platform</div>
+                        </div>
+                    </a>
+                    <a href="https://v2ex.com/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-indigo-500/20 text-indigo-400">💬</div>
+                        <div>
+                            <div class="title">V2EX</div>
+                            <div class="sub">Developer Community</div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="section-social" class="space-y-3 sm:space-y-4">
+                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> 娱乐社交
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <a href="https://www.bilibili.com" target="_blank" class="bento-item">
+                        <div class="icon-box bg-pink-500/20 text-pink-400">📺</div>
+                        <div>
+                            <div class="title">哔哩哔哩</div>
+                            <div class="sub">Bilibili Video</div>
+                        </div>
+                    </a>
+                    <a href="https://www.youtube.com/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-red-600/20 text-red-500">🎦</div>
+                        <div>
+                            <div class="title">YouTube</div>
+                            <div class="sub">Global Platform</div>
+                        </div>
+                    </a>
+                    <a href="https://www.douyin.com" target="_blank" class="bento-item">
+                        <div class="icon-box bg-gray-600/20 text-gray-100">🎵</div>
+                        <div>
+                            <div class="title">抖音</div>
+                            <div class="sub">Douyin Short Video</div>
+                        </div>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-gradient-to-tr from-yellow-500/20 to-purple-500/20 text-pink-400">📸</div>
+                        <div>
+                            <div class="title">Instagram</div>
+                            <div class="sub">Social Media</div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="section-scholar" class="space-y-3 sm:space-y-4">
+                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 inline-block"></span> 学术科研
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <a href="https://scholar.google.com/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-blue-500/20 text-blue-400">🔍</div>
+                        <div>
+                            <div class="title">谷歌学术</div>
+                            <div class="sub">Google Scholar</div>
+                        </div>
+                    </a>
+                    <a href="https://xueshu.baidu.com/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-emerald-500/20 text-emerald-400">🎓</div>
+                        <div>
+                            <div class="title">百度学术</div>
+                            <div class="sub">Baidu Scholar</div>
+                        </div>
+                    </a>
+                    <a href="https://www.cnki.net/" target="_blank" class="bento-item">
+                        <div class="icon-box bg-teal-500/20 text-teal-400">📖</div>
+                        <div>
+                            <div class="title">中国知网</div>
+                            <div class="sub">CNKI Journal</div>
+                        </div>
+                    </a>
+                    <a href="https://www.dotaindex.com/scholar" target="_blank" class="bento-item">
+                        <div class="icon-box bg-amber-500/20 text-amber-400">💡</div>
+                        <div>
+                            <div class="title">灯塔索引</div>
+                            <div class="sub">DotaIndex Scholar</div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bento-card p-4 sm:p-6 rounded-3xl space-y-3">
+                    <h2 class="text-sm sm:text-base font-bold text-pink-400 flex items-center gap-2">
+                        <span>🚀</span> GitHub CDN 加速转换
+                    </h2>
+                    <input
+                        type="text"
+                        id="github-url-input"
+                        placeholder="粘贴 GitHub / raw 链接..."
+                        class="w-full px-3.5 py-2.5 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500/80 text-white text-xs placeholder-gray-400"
+                    />
+                    <div id="result-link" class="hidden p-2.5 bg-black/50 border border-pink-500/30 rounded-xl flex items-center justify-between text-xs">
+                        <span id="cdn-link-text" class="text-pink-300 truncate cursor-pointer hover:underline" title="点击复制"></span>
+                        <span class="text-gray-400 ml-2 shrink-0">(点击复制)</span>
+                    </div>
+                </div>
+
+                <div class="bento-card p-4 sm:p-6 rounded-3xl space-y-3">
+                    <h2 class="text-sm sm:text-base font-bold text-cyan-400 flex items-center gap-2">
+                        <span>📝</span> 快捷字数统计与清理
+                    </h2>
+                    <textarea
+                        id="counter-input"
+                        rows="2"
+                        placeholder="在此粘贴文本以实时统计字符数..."
+                        class="w-full p-2.5 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white text-xs resize-none placeholder-gray-400"
+                    ></textarea>
+                    <div class="flex items-center justify-between text-xs text-gray-400">
+                        <span id="counter-result">字符数: 0 | 单词数: 0</span>
+                        <button id="counter-clear-btn" class="text-cyan-400 hover:underline">清空</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="pt-6 sm:pt-8 border-t border-white/10 text-center text-xs text-gray-300 space-y-2">
+            <p class="flex items-center justify-center gap-2">
+                <span>Kangの小小世界</span>
+                <a href="https://xboard.texo.network" target="_blank" rel="noopener noreferrer" class="hover:scale-125 transition">😉</a>
+            </p>
+            <p>© 2026 Kangの小小世界 · Hosted on GitHub Pages</p>
+        </footer>
     </div>
 
-    <div id="sidebar-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-    </div>
+    <nav class="mobile-bottom-bar lg:hidden fixed bottom-0 left-0 w-full bg-slate-950/90 backdrop-blur-xl border-t border-white/10 z-50 flex items-center justify-around py-2 px-1 text-xs text-gray-400">
+        <a href="#section-search" class="flex flex-col items-center gap-0.5 hover:text-blue-400 transition">
+            <span class="text-lg">🔍</span>
+            <span class="text-[10px]">搜索</span>
+        </a>
+        <a href="#section-todo" class="flex flex-col items-center gap-0.5 hover:text-amber-400 transition">
+            <span class="text-lg">📝</span>
+            <span class="text-[10px]">待办</span>
+        </a>
+        <a href="#section-tools" class="flex flex-col items-center gap-0.5 hover:text-emerald-400 transition">
+            <span class="text-lg">🛠️</span>
+            <span class="text-[10px]">导航</span>
+        </a>
+        <a href="#section-hub" class="sidebar-hub-link flex flex-col items-center gap-0.5 text-purple-400 hidden">
+            <span class="text-lg">🔐</span>
+            <span class="text-[10px]">私域</span>
+        </a>
+        <button id="scroll-top-btn" class="flex flex-col items-center gap-0.5 hover:text-white transition">
+            <span class="text-lg">⬆️</span>
+            <span class="text-[10px]">顶部</span>
+        </button>
+    </nav>
 
-    <header class="text-center">
-        <h1 class="text-6xl font-extrabold mb-4 tracking-tight">
-            <span>余心留白</span>
-            <a href="https://www.linkcloud.network/auth/login" target="_blank" rel="noopener noreferrer" class="inline-block text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
-                🙄
-            </a>
-        </h1>
-        <h5 class="mt-4 text-lg text-gray-700 dark:text-gray-200">
-            <p id="hitokoto"></p>
-            <script src="https://v1.hitokoto.cn/?encode=js&amp;select=%23hitokoto" defer=""></script>
-        </h5>
-    </header>
-
-    <section class="flex flex-col items-center justify-center px-3 py-4 bg-gray-800/60 rounded-2xl shadow-md space-y-6
-                    dark:bg-gray-900/60 w-full max-w-6xl">
-        <h2 class="text-3xl font-semibold text-white border-b-2 border-red-500 pb-3 mb-3
-                    dark:text-gray-100 dark:border-red-700">
-            我不会使用搜索
-        </h2>
-        <div class="flex flex-col sm:flex-row w-full max-w-2xl space-y-4 sm:space-y-0 sm:space-x-4">
-            <input
-                type="text"
-                id="search-input"
-                placeholder="在这里输入搜索内容..."
-                class="flex-grow p-4 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg
-                        dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:focus:ring-blue-400"
-            />
-            <button
-                id="google-search-btn"
-                class="px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200
-                        dark:bg-blue-700 dark:hover:bg-blue-600 dark:focus:ring-blue-600"
-            >
-                谷歌搜索
-            </button>
-            <button
-                id="baidu-search-btn"
-                class="px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200
-                        dark:bg-green-700 dark:hover:bg-green-600 dark:focus:ring-green-600"
-            >
-                百度搜索
-            </button>
-        </div>
-        <p id="search-error-message" class="error-message">请输入搜索内容！</p>
-    </section>
-
-    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 w-full max-w-6xl">
-        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                         dark:bg-gray-900/60">
-            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-blue-500 pb-3
-                         dark:text-gray-100 dark:border-blue-700">
-                常用工具
-            </h2>
-            <ul class="space-y-4">
-                <li>
-                    <a href="https://mail.qq.com" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                        <span class="mr-3">✉️</span> QQ 邮箱
-                    </a>
-                </li>
-                <li>
-                    <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                        <span class="mr-3">✉️</span> 谷歌邮箱
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.jsdelivr.com/" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                        <span class="mr-3">💻</span> jsDelivr
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.deepl.com/translator" target="_blank" rel="noopener noreferrer" class="text-blue-300 hover:text-blue-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-blue-800/50">
-                        <span class="mr-3">🌐</span> DeepL 翻译
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                         dark:bg-gray-900/60">
-            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-green-500 pb-3
-                         dark:text-gray-100 dark:border-green-700">
-                学习资源
-            </h2>
-            <ul class="space-y-4">
-                <li>
-                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                        <span class="mr-3">💻</span> GitHub
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.ghxi.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                        <span class="mr-3">💬</span> 果核剥壳
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.星际穿越.com" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                        <span class="mr-3">🎥</span> 观影
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.bdgroup-lab.com/" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-green-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-green-800/50">
-                        <span class="mr-3">📚</span> 编动小组
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                         dark:bg-gray-900/60">
-            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-purple-500 pb-3
-                         dark:text-gray-100 dark:border-purple-700">
-                社交媒体
-            </h2>
-            <ul class="space-y-4">
-                <li>
-                    <a href="https://www.douyin.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                        <span class="mr-3">🎥</span> 抖音
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                        <span class="mr-3">🎬</span> 哔哩哔哩
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                        <span class="mr-3">📸</span> Instagram
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="text-purple-300 hover:text-purple-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-purple-800/50">
-                        <span class="mr-3">🎦</span> YouTube
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section class="bg-gray-800/60 px-3 py-4 rounded-2xl shadow-md transform transition duration-300 hover:scale-105 hover:shadow-lg
-                         dark:bg-gray-900/60">
-            <h2 class="text-3xl font-semibold text-white mb-4 border-b-2 border-teal-500 pb-3
-                         dark:text-gray-100 dark:border-teal-700">
-                学术工具
-            </h2>
-            <ul class="space-y-4">
-                <li>
-                    <a href="https://scholar.google.com/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                        <span class="mr-3">🔍</span> 谷歌学术
-                    </a>
-                </li>
-                <li>
-                    <a href="https://xueshu.baidu.com/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                        <span class="mr-3">🔍</span> 百度学术
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.cnki.net/" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                        <span class="mr-3">📖</span> 中国知网 (CNKI)
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.dotaindex.com/scholar" target="_blank" rel="noopener noreferrer" class="text-teal-300 hover:text-teal-100 text-xl font-medium transition duration-200 block p-3 rounded-md hover:bg-teal-800/50">
-                        <span class="mr-3">📚</span> 灯塔索引
-                    </a>
-                </li>
-            </ul>
-        </section>
-    </main>
-
-    <footer class="mt-auto py-8 text-center text-gray-900 dark:text-gray-100">
-        <p class="mb-4 text-center">
-            <span>Kangの小小世界</span>
-            <a href="https://xboard.texo.network" target="_blank" rel="noopener noreferrer" class="inline-block text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
-                😉
-            </a>
-        </p>
-        <div class="flex justify-center space-x-6">
-            <a href="https://github.com/ONLYLOVELYKISS" target="_blank" rel="noopener noreferrer" class="text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="display:block;margin:auto;">
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.11.82-.26.82-.577v-2.02c-3.33.72-4.04-1.61-4.04-1.61-.54-1.37-1.32-1.74-1.32-1.74-1.08-.74.08-.73.08-.73 1.2.08 1.833 1.23 1.833 1.23 1.066 1.82 2.8 1.29 3.49.98.11-.76.41-1.29.75-1.58-2.66-.3-5.46-1.33-5.46-5.92 0-1.31.46-2.38 1.22-3.22-.12-.3-.53-1.52.12-3.18 0 0 1.02-.32 3.35 1.23.96-.26 1.98-.39 3-.39 1.02 0 2.04.13 3 .39 2.33-1.55 3.35-1.23 3.35-1.23.65 1.66.24 2.88.12 3.18.76.84 1.22 1.9 1.22 3.22 0 4.6-2.8 5.62-5.47 5.92.42.36.81 1.09.81 2.2v3.25c0 .32.22.68.83.57C20.563 21.8 24 17.302 24 12c0-6.627-5.373-12-12-12z"/>
-                </svg>
-            </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="display:block;margin:auto;">
-                    <path d="M17.53 3H21L14.47 10.29L22 21H15.66L10.61 14.37L4.97 21H1.5L8.42 13.18L1 3H7.49L12.13 9.13L17.53 3ZM16.37 19H18.19L6.3 5H4.38L16.37 19Z"/>
-                </svg>
-            </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" class="text-gray-900 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="display:block;margin:auto;">
-                    <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zm4.25 3.25a5.25 5.25 0 1 1 0 10.5a5.25 5.25 0 0 1 0-10.5zm0 1.5a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5zm5.25.75a1 1 0 1 1-2 0a1 1 0 0 1 2 0z"/>
-                </svg>
-            </a>
-        </div>
-    </footer>
+    <div id="toast-container" class="fixed bottom-16 sm:bottom-6 right-4 sm:right-6 z-50 space-y-2 pointer-events-none"></div>
 
     <script src="js/main.js"></script>
 </body>
 </html>
-
-
